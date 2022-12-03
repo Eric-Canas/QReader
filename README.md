@@ -50,7 +50,7 @@ The ``detect_and_decode`` function will automatically apply several _QR_ **detec
 
 #### QReader.detect_and_decode(image, deep_search = True)
 
-This method will decode the QR code in the given image and return the result. If the QR code is not detected, it will  return ``None``.
+This method will decode the _QR_ code in the given image and return the result. If the _QR_ code is not detected, it will  return ``None``.
 
 - ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_].
 - ``deep_search``: **boolean**. If ``True``, it will make a deep search if the _QR_ can't be detected at the first attempt. This **deep search** will inspect subregions of the ``image`` to locate **difficult** and **small** _QR_ codes. It can be slightly slower but severally increases the detection rate. Default: True.
@@ -84,14 +84,15 @@ Internally, this method will run the <a href="https://github.com/NaturalHistoryM
 
 ## Usage Tests
 <div><img alt="test_on_mobile" title="test_on_mobile" src="./documentation/resources/test_mobile.jpeg" width="62%"><img alt="" title="QReader" src="./documentation/resources/test_draw_64x64.jpeg" width="33%" align="right"></div>
-<div>Two sample images, at left, one taken with a mobile phone, at right a 64x64 QR has been pasted over a drawing.</div>
-  
-  
-  
+<div>Two sample images, at left, one taken with a mobile phone, at right a 64x64 _QR_ has been pasted over a drawing.</div>    
+<br>
+
+The following code will try to decode these images containing _QR_s with **QReader**, <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> and <a href="https://opencv.org/" target="_blank">OpenCV</a>.
 ```python
 from qreader import QReader
 from cv2 import QRCodeDetector, imread
 from pyzbar.pyzbar import decode
+
 # Initialize the three tested readers (QRReader, OpenCV and pyzbar)
 qreader_reader, cv2_reader, pyzbar_reader = QReader(), QRCodeDetector(), decode
 
@@ -117,11 +118,12 @@ Image: test_mobile.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenC
 Image: test_draw_64x64.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: .
 ```
 
+Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder** and a combination of <a href="https://opencv.org/" target="_blank">OpenCV</a> and <a href="https://github.com/Gbellport/QR-code-localization-YOLOv3" target="_blank">YoloV3</a> for the **detector**. The improved **detection-decoding rate** that **QReader** achieves doesn't come from the usage of more powerful readers, but from the combination of the different image pre-processing and _QR_ search methods it applies.
 
 ## Acknowledgements
 
 This library is based on the following projects:
 
 - Pretrained model weights of <a href="https://github.com/Gbellport/QR-code-localization-YOLOv3" target="_blank">QR-code-locatiazation-YOLOv3</a> by <a href="https://github.com/Gbellport" target="_blank">Gabriel Bellport</a>.
-- <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> QR Decoder.
-- <a href="https://opencv.org/" target="_blank">OpenCV</a> methods for image filtering and QR Detection.
+- <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> _QR_ Decoder.
+- <a href="https://opencv.org/" target="_blank">OpenCV</a> methods for image filtering and _QR_ Detection.
