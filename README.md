@@ -12,7 +12,7 @@ To install QReader, simply run:
 pip install qreader
 ```
 
-If you're not using **Windows**, you might need to install some additional **pyzbar** dependencies:
+If you're not using **Windows**, you may need to install some additional **pyzbar** dependencies:
 
 On Linux:
 ```bash
