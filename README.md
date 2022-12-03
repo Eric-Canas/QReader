@@ -82,6 +82,40 @@ Internally, this method will run the <a href="https://github.com/NaturalHistoryM
 
 - Returns: **str**. The decoded text of the _QR_ code. If the _QR_ code is not detected, it will return ``None``.
 
+## Usage Tests
+
+<img alt="test_on_mobile" title="test_on_mobile" src="./documentation/resources/test_mobile.jpeg" width="64%"> <img alt="" title="QReader" src="./documentation/resources/test_draw_64x64.jpeg" width="34%" align="right">
+_Two sample images, at right, one taken with a mobile phone, at left a 64x64 QR has been pasted over a drawing._
+
+```python
+from qreader import QReader
+from cv2 import QRCodeDetector, imread
+from pyzbar.pyzbar import decode
+# Initialize the three tested readers (QRReader, OpenCV and pyzbar)
+qreader_reader, cv2_reader, pyzbar_reader = QReader(), QRCodeDetector(), decode
+
+for img_path in ('test_mobile.jpeg', 'test_draw_64x64.jpeg'):
+    # Read the image
+    img = imread(img_path)
+
+    # Try to decode the QR code with the three readers
+    qreader_out = qreader_reader.detect_and_decode(image=img)
+    cv2_out = cv2_reader.detectAndDecode(img=img)[0]
+    pyzbar_out = pyzbar_reader(image=img)
+    # Read the content of the pyzbar output
+    pyzbar_out = pyzbar_out[0].data.decode('utf-8') if len(pyzbar_out) > 0 else ""
+
+    # Print the results
+    print(f"Image: {img_path} -> QReader: {qreader_out}. OpenCV: {cv2_out}. pyzbar: {pyzbar_out}.")
+```
+
+The output of the previous code is:
+
+```txt
+Image: test_mobile.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: .
+Image: test_draw_64x64.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: .
+```
+
 
 ## Acknowledgements
 
