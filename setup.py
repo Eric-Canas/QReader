@@ -2,9 +2,10 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='qreader',
-    version='1.0.0',
+    version='1.2.2',
     packages=find_namespace_packages(),
-    package_dir={'qreader': 'qreader'},
+    # expose qreader.py as the unique module
+    py_modules=['qreader'],
     url='https://github.com/Eric-Canas/qreader',
     license='MIT',
     author='Eric Canas',
@@ -17,6 +18,12 @@ setup(
         'opencv-python',
         'pyzbar',
     ],
+    # To include the __yolo_v3_qr_detector weights in the package, we need to add the following line:
+    include_package_data=True,
+    # To include the __yolo_v3_qr_detector weights in the package, we need to add the following line:
+    data_files=[('__yolo_v3_qr_detector',
+                 ['__yolo_v3_qr_detector/qrcode-yolov3-tiny.cfg',
+                  '__yolo_v3_qr_detector/qrcode-yolov3-tiny_last.weights'])],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

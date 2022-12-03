@@ -15,7 +15,7 @@ from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol
 from cv2 import QRCodeDetector, resize
 import cv2
 
-from yolo_v3.yolov3_qr_detector import _YoloV3QRDetector
+from __yolo_v3_qr_detector.yolov3_qr_detector import _YoloV3QRDetector
 
 _SHARPEN_KERNEL = np.array(((-1, -1, -1), (-1, 9, -1), (-1, -1, -1)), dtype=np.float32)
 

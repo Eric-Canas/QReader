@@ -11,7 +11,7 @@ Github: https://github.com/Eric-Canas
 from __future__ import annotations
 
 import cv2
-from yolo_v3.constants import YOLO_CONFIG_PATH, YOLO_WEIGHTS_PATH
+from __yolo_v3_qr_detector.constants import YOLO_CONFIG_PATH, YOLO_WEIGHTS_PATH
 import numpy as np
 
 _INPUT_SIZE = (416, 416)
@@ -77,6 +77,15 @@ class _YoloV3QRDetector:
             return (x_1, y_1, x_2, y_2)
         else:
             return None
+
+    def __call__(self, img: np.ndarray) -> tuple[bool, tuple[int, int, int, int]|None]:
+        return self.detect(img)
+
+    def __del__(self):
+        # Close the YoloV3 model
+        self.yolo_v3_QR_detector.setInput(blob=None)
+        del self.yolo_v3_QR_detector
+
 
 
 
