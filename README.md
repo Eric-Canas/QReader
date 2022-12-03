@@ -1,0 +1,2 @@
+# qreader
+Robust QR reader 
