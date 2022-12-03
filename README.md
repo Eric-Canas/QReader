@@ -1,6 +1,6 @@
 # QReader
 
-<img alt="QReader" tittle="QReader" src="./documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** _QR_ codes within images in <a href=https://www.python.org/ target="_blank"><img alt="Python" title="Python" src="https://img.shields.io/static/v1?label=&message=Python&color=3C78A9&logo=python&logoColor=FFFFFF"></a>.
+<img alt="QReader" title="QReader" src="./documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** _QR_ codes within images in <a href=https://www.python.org/ target="_blank"><img alt="Python" title="Python" src="https://img.shields.io/static/v1?label=&message=Python&color=3C78A9&logo=python&logoColor=FFFFFF"></a>.
 
 Behind the scenes, this detector is based on several other **Detectors** & **Decoders**, such as <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a>, <a href="https://opencv.org/" target="_blank">OpenCV</a> and <a href="https://github.com/Gbellport/QR-code-localization-YOLOv3" target="_blank">YoloV3</a>, as well as different image preprocessing techniques. **QReader** will transparently combine all these techniques to maximize the detection rate on difficult images (e.g. _QR_ code too small).
 
@@ -81,3 +81,12 @@ Internally, this method will run the <a href="https://github.com/NaturalHistoryM
 
 
 - Returns: **str**. The decoded text of the _QR_ code. If the _QR_ code is not detected, it will return ``None``.
+
+
+## Acknowledgements
+
+This library is based on the following projects:
+
+- Pretrained model weights of <a href="https://github.com/Gbellport/QR-code-localization-YOLOv3" target="_blank">QR-code-locatiazation-YOLOv3</a> by <a href="https://github.com/Gbellport" target="_blank">Gabriel Bellport</a>.
+- <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> QR Decoder.
+- <a href="https://opencv.org/" target="_blank">OpenCV</a> methods for image filtering and QR Detection.
