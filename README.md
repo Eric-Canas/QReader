@@ -1,6 +1,6 @@
 # QReader
 
-QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** _QR_ codes within images in <a href=https://www.python.org/ target="_blank"><img alt="Python" title="Python" src="https://img.shields.io/static/v1?label=&message=Python&color=3C78A9&logo=python&logoColor=FFFFFF"></a>.
+<img alt="QReader" tittle="QReader" src="./documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** _QR_ codes within images in <a href=https://www.python.org/ target="_blank"><img alt="Python" title="Python" src="https://img.shields.io/static/v1?label=&message=Python&color=3C78A9&logo=python&logoColor=FFFFFF"></a>.
 
 Behind the scenes, this detector is based on several other **Detectors** & **Decoders**, such as <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a>, <a href="https://opencv.org/" target="_blank">OpenCV</a> and <a href="https://github.com/Gbellport/QR-code-localization-YOLOv3" target="_blank">YoloV3</a>, as well as different image preprocessing techniques. **QReader** will transparently combine all these techniques to maximize the detection rate on difficult images (e.g. _QR_ code too small).
 
@@ -26,7 +26,7 @@ brew install zbar
 
 ## Usage
 
-**QReader** is a very simple and straight-forward library. For most use cases, you'll only need to call one function:
+**QReader** is a very simple and straight-forward library. For most use cases, you'll only need to call ``detect_and_decode``:
 
 ```python
 from qreader import QReader
@@ -43,7 +43,7 @@ image = cv2.imread("path/to/image.png")
 decoded_text = qreader.detect_and_decode(image=image)
 ```
 
-``detect_and_decode`` will automatically apply several QR **detection** and **decoding** methods until finding one able to retrieve the QR within that image.
+The ``detect_and_decode`` function will automatically apply several _QR_ **detection** (_OpenCV_, _YoloV3_, _sub-region search_...) and **decoding** methods (_sharpening_, _binarization_, _blurring_, _rescaling_...) until finding one able to retrieve the decoded _QR_ information within that image.
 
 
 ## API Reference
