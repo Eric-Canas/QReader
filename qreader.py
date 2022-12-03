@@ -15,11 +15,11 @@ from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol
 from cv2 import QRCodeDetector, resize
 import cv2
 
-from qreader.yolo_v3.yolov3_qr_detector import _YoloV3QRDetector
+from yolo_v3.yolov3_qr_detector import _YoloV3QRDetector
 
 _SHARPEN_KERNEL = np.array(((-1, -1, -1), (-1, 9, -1), (-1, -1, -1)), dtype=np.float32)
 
-class QRDecoder:
+class QReader:
     def __init__(self):
         """
         This class implements a robust QR detector & decoder.

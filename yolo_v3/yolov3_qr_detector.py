@@ -11,7 +11,7 @@ Github: https://github.com/Eric-Canas
 from __future__ import annotations
 
 import cv2
-from qreader.yolo_v3.constants import YOLO_CONFIG_PATH, YOLO_WEIGHTS_PATH
+from yolo_v3.constants import YOLO_CONFIG_PATH, YOLO_WEIGHTS_PATH
 import numpy as np
 
 _INPUT_SIZE = (416, 416)

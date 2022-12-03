@@ -1,3 +1,6 @@
-qreader/yolo_v3/__pycache__/
+yolo_v3/__pycache__/
 .idea/
 Private Instructions.md
+dist/
+qreader.egg-info/
+__pycache__/
