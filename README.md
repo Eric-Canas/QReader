@@ -48,7 +48,7 @@ The ``detect_and_decode`` function will automatically apply several _QR_ **detec
 
 ## API Reference
 
-#### QReader.detect_and_decode(image, deep_search = True)
+### QReader.detect_and_decode(image, deep_search = True)
 
 This method will decode the _QR_ code in the given image and return the result. If the _QR_ code is not detected, it will  return ``None``.
 
@@ -58,7 +58,7 @@ This method will decode the _QR_ code in the given image and return the result. 
 
 - Returns: **str**. The decoded text of the _QR_ code. If the _QR_ code is not detected, it will return ``None``.
 
-#### QReader.detect(image)
+### QReader.detect(image)
 
 This method detects the _QR_ in the image and returns the **bounding box** surrounding it in the format (_x1_, _y1_, _x2_, _y2_). 
 
@@ -70,7 +70,7 @@ This method will always assume that there is only one _QR_ code in the image.
 - Returns: **Tuple of Integers** or **None**. The bounding box of the _QR_ code in the format (_x1_, _y1_, _x2_, _y2_). If the _QR_ code is not detected, it will return ``None``.
 
 
-#### QReader.decode(image, bbox = None)
+### QReader.decode(image, bbox = None)
 
 This method decodes the _QR_ code of the given image, if a ``bbox`` is given it will only look within that delimited region.
 
@@ -84,10 +84,10 @@ Internally, this method will run the <a href="https://github.com/NaturalHistoryM
 
 ## Usage Tests
 <div><img alt="test_on_mobile" title="test_on_mobile" src="./documentation/resources/test_mobile.jpeg" width="62%"><img alt="" title="QReader" src="./documentation/resources/test_draw_64x64.jpeg" width="33%" align="right"></div>
-<div>Two sample images, at left, one taken with a mobile phone, at right a 64x64 _QR_ has been pasted over a drawing.</div>    
+<div>Two sample images. At left, an image taken with a mobile phone. At right, a 64x64 <i>QR</i> pasted over a drawing.</div>    
 <br>
 
-The following code will try to decode these images containing _QR_s with **QReader**, <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> and <a href="https://opencv.org/" target="_blank">OpenCV</a>.
+The following code will try to decode these images containing <i>QR</i>s with **QReader**, <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> and <a href="https://opencv.org/" target="_blank">OpenCV</a>.
 ```python
 from qreader import QReader
 from cv2 import QRCodeDetector, imread
