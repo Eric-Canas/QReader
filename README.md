@@ -83,10 +83,11 @@ Internally, this method will run the <a href="https://github.com/NaturalHistoryM
 - Returns: **str**. The decoded text of the _QR_ code. If the _QR_ code is not detected, it will return ``None``.
 
 ## Usage Tests
-
-<img alt="test_on_mobile" title="test_on_mobile" src="./documentation/resources/test_mobile.jpeg" width="64%"> <img alt="" title="QReader" src="./documentation/resources/test_draw_64x64.jpeg" width="34%" align="right">
-_Two sample images, at right, one taken with a mobile phone, at left a 64x64 QR has been pasted over a drawing._
-
+<div><img alt="test_on_mobile" title="test_on_mobile" src="./documentation/resources/test_mobile.jpeg" width="62%"><img alt="" title="QReader" src="./documentation/resources/test_draw_64x64.jpeg" width="33%" align="right"></div>
+<div>Two sample images, at left, one taken with a mobile phone, at right a 64x64 QR has been pasted over a drawing.</div>
+  
+  
+  
 ```python
 from qreader import QReader
 from cv2 import QRCodeDetector, imread
