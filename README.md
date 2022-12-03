@@ -26,7 +26,7 @@ brew install zbar
 
 ## Usage
 
-**QReader** is a very simple and straight-forward library. For most use cases, you'll only need to call one function:
+**QReader** is a very simple and straight-forward library. For most use cases, you'll only need to call ``detect_and_decode``:
 
 ```python
 from qreader import QReader
@@ -43,7 +43,7 @@ image = cv2.imread("path/to/image.png")
 decoded_text = qreader.detect_and_decode(image=image)
 ```
 
-``detect_and_decode`` will automatically apply several QR **detection** and **decoding** methods until finding one able to retrieve the QR within that image.
+The ``detect_and_decode`` function will automatically apply several _QR_ **detection** (_OpenCV_, _YoloV3_, _sub-region search_...) and **decoding** methods (_sharpening_, _binarization_, _blurring_, _rescaling_...) until finding one able to retrieve the decoded _QR_ information within that image.
 
 
 ## API Reference
