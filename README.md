@@ -83,7 +83,7 @@ Internally, this method will run the <a href="https://github.com/NaturalHistoryM
 - Returns: **str**. The decoded text of the _QR_ code. If the _QR_ code is not detected, it will return ``None``.
 
 ## Usage Tests
-<div><img alt="test_on_mobile" title="test_on_mobile" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_mobile.jpeg" width="62%"><img alt="" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_draw_64x64.jpeg" width="33%" align="right"></div>
+<div><img alt="test_on_mobile" title="test_on_mobile" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_mobile.jpeg" width="60%"><img alt="" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_draw_64x64.jpeg" width="32%" align="right"></div>
 <div>Two sample images. At left, an image taken with a mobile phone. At right, a 64x64 <i>QR</i> pasted over a drawing.</div>    
 <br>
 
