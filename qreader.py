@@ -53,7 +53,7 @@ class QReader:
             except cv2.error:
                 found, bbox = False, None
 
-        return bbox, found
+        return found, bbox
 
     def decode(self, image: np.ndarray, bbox: tuple[int, int, int, int]|None = None) -> str | None:
         """
