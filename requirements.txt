@@ -1,3 +1,4 @@
 opencv-python>=4.5.5.62
 numpy>=1.20.3
 pyzbar>=0.1.9
+qrdet>=1.3

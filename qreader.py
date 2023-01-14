@@ -1,7 +1,8 @@
 """
-This class implements a robust QR detector & decoder. This detector is based on several other detectors and decoders,
-such as pyzbar, openCV and YoloV3, as well as different image preprocessing techniques. This detector will transparently
-combine all these techniques to maximize the detection rate on difficult images (e.g. QR code too small).
+This class implements a robust QR detector & decoder. This detector is based on YOLOv7 model on the side
+of the detection and pyzbar on the side of the decoder. It also implements different image preprocessing
+techniques. This detector will transparently combine all these techniques to maximize the detection rate
+on difficult images.
 
 Mail: eric@ericcanas.com
 Date: 02-12-2022
@@ -12,57 +13,43 @@ from __future__ import annotations
 
 import numpy as np
 from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol
-from cv2 import QRCodeDetector, resize
 import cv2
 
-from __yolo_v3_qr_detector.yolov3_qr_detector import _YoloV3QRDetector
-
+from qrdet import QRDetector
 _SHARPEN_KERNEL = np.array(((-1, -1, -1), (-1, 9, -1), (-1, -1, -1)), dtype=np.float32)
 
 class QReader:
     def __init__(self):
         """
-        This class implements a robust QR detector & decoder.
+        This class implements a robust, ML Based QR detector & decoder.
         """
-        self.__cv2_detector = QRCodeDetector()
-        self.__yolo_v3_detector = _YoloV3QRDetector()
+        self.detector = QRDetector()
 
-    def detect(self, image: np.ndarray) -> tuple[bool, tuple[int, int, int, int]|None]:
+    def detect(self, image: np.ndarray, min_confidence=0.6) -> tuple[tuple[int, int, int, int], ...]:
         """
-        This method will detect the QR code in the image and return the bounding box of the QR code. If the QR code is
-        not detected, it will return None.
+        This method will detect the QRs in the image and return the bounding boxes of the QR codes. If the QR code is
+        not detected, it will return an empty tuple.
 
-        This method will always assume that there is only one QR code in the image.
+        :return: tuple[int, int, int, int], ...]. A tuple with the bounding boxes of the detected QR codes
+                                                  in the format (x1, y1, x2, y2). If no QR code is detected, it will
+                                                  return an empty tuple.
 
-        :param image: np.ndarray. The image to be read. It must be an uint8 np.ndarray (HxWxC).
-
-        :return: tuple[bool, tuple[int, int, int, int]|None]. The first element is a boolean indicating if the QR code
-                                                              was detected or not. The second element is the bounding
-                                                              box of the QR code in the format (x1, y1, x2, y2) or None
-                                                              if it was not detected.
         """
-        found, bbox = self.__yolo_v3_detector.detect(img=image)
-        if not found:
-            try:
-                found, bbox = self.__cv2_detector.detect(img=image)
-                if found:
-                    h, w = image.shape[:2]
-                    x1, y1 = max(round(np.min(bbox[0, :, 0])), 0), max(round(np.min(bbox[0, :, 1])), 0)
-                    x2, y2 = min(round(np.max(bbox[0, :, 0])), w), min(round(np.max(bbox[0, :, 1])), h)
-                    bbox = (x1, y1, x2, y2)
-            except cv2.error:
-                found, bbox = False, None
 
-        return found, bbox
+        detections = self.detector.detect(image=image, return_confidences=True, as_float=False)
+        detections = tuple(tuple(detection) for detection, confidence in detections if confidence >= min_confidence)
 
-    def decode(self, image: np.ndarray, bbox: tuple[int, int, int, int]|None = None) -> str | None:
+        return detections
+
+    def decode(self, image: np.ndarray, bbox: tuple[int, int, int, int] | None = None) -> str | None:
         """
         This method is just a wrapper of pyzbar decodeQR method, that will try to apply image pre-processing when the
-        QR code is not detected for the first time.
+        QR code is not readed for the first time.
 
         :param image: np.ndarray. The image to be read. It must be a np.ndarray (HxWxC) (uint8).
-        :param bbox: tuple[int, int, int, int]. The bounding box of the QR code in the format (x1, y1, x2, y2) or None.
-                                                If not given it will try to find it in the whole image.
+        :param bbox: tuple[int, int, int, int]. The bounding box of the QR code in the format (x1, y1, x2, y2) (can be
+                                                obtained with the detect method. If None, it will try to read the QR from
+                                                the whole image. Not recommended. Default: None.
 
         :return: str|None. The decoded content of the QR code or None if it can not be read.
         """
@@ -86,96 +73,26 @@ class QReader:
 
         return decodedQR
 
-    def detect_and_decode(self, image: np.ndarray, deep_search: bool = True) -> str | None:
+    def detect_and_decode(self, image: np.ndarray, return_bboxes: bool = False) -> \
+            tuple[tuple[tuple[int, int, int, int], str | None], ...] | tuple[str|None, ...]:
         """
-        This method will decode the QR code in the image and return the result. If the QR code is not detected, it will
-        return None.
+        This method will decode all the QR codes in the image and return the decoded results (or None if there is
+        a QR but can not be decoded).
 
-        :param image: np.ndarray. The image to be read. It can be a path or a np.ndarray (HxWxC)
-        :param deep_search: bool. If True, it will make a deep search if the QR can't be detected in the first attempt.
-                                  This deep search will inspect subregions of the image to locate difficult QR codes.
-                                  It can be slightly slower but severally increases the detection rate. Default: True.
+        :param image: np.ndarray. np.ndarray (HxWxC). The image to be read. It is expected to be RGB (uint8).
+        :param return_bboxes: bool. If True, it will return the bounding boxes of the QR codes. Default: False.
 
-        :return: str|None. The result of the detection or None if it is not detected
+        :return: tuple[tuple[tuple[int, int, int, int], str | None], ...] | tuple[str]. If return_bboxes is True, it will
+                    return a tuple with the bounding boxes of the QR codes and the decoded content of the QR codes. If
+                    return_bboxes is False, it will return a tuple with the decoded content of the QR codes. The format
+                    of the bounding boxes is (x1, y1, x2, y2). The content of the QR codes is a string or None if the QR
+                    code can not be decoded.
+
         """
-        if not deep_search:
-            found, bbox = self.detect(image=image)
-            if not found:
-                return None
-            return self.decode(image=image, bbox=bbox)
+        bboxes = self.detect(image=image)
+        decoded_qrs = tuple(self.decode(image=image, bbox=bbox) for bbox in bboxes)
+
+        if return_bboxes:
+            return tuple(zip(bboxes, decoded_qrs))
         else:
-            return self.__deep_detect_and_decode(image=image)
-
-    def __deep_detect_and_decode(self, image: np.ndarray, min_img_size = 64) -> str | None:
-        """
-        This method will try to detect and decode the QR code in the image. If it is not detected, it will
-        fall back to a deep search that will inspect subregions of the image, looking for difficult or small QR codes.
-
-        :param image: np.ndarray. The image to be read. It must be an uint8 numpy array (HxW[xC]).
-        :param min_img_size: int. The minimum size of the image to be inspected. No crops will be done below this size.
-                                  Default: 64.
-
-        :return: str|None. The decoded QR content or None if it couldn't be detected.
-        """
-        img_h, img_w = image.shape[:2]
-        current_h, current_w = img_h, img_w
-
-        # Starting with the whole image, try sub-patches of the image until a QR code is detected
-        while current_h >= min_img_size and current_w >= min_img_size:
-            # Include some overlap between sub-patches to avoid missing QR codes
-            h_pad, w_pad = current_h // 4, current_w // 4
-
-            for x in range(0, img_w, current_w):
-                for y in range(0, img_h, current_h):
-                    subimage = image[max(0, y - h_pad):min(img_h, y + current_h + h_pad),
-                                     max(0, x - w_pad):min(img_w, x + current_w + w_pad)]
-                    # Try to decode it applying resizing as fallback
-                    decodedQR = self.__deep_detect_and_decode_with_resize(image=subimage)
-                    if decodedQR is not None:
-                        return decodedQR
-
-            current_h, current_w = current_h // 2, current_w // 2
-
-        return None
-
-    def __deep_detect_and_decode_with_resize(self, image: np.ndarray,
-                                             rescale_factors: tuple[float|int, ...] = (1, 2, 0.5, 4, 0.25),
-                                             min_img_size_to_check: int = 16, max_image_size_to_check: int = 2048) -> str | None:
-        """
-        This method will try to find QR codes that are difficult to read because they are too small or too big.
-        The detection step will run in the whole image, then, if something is found, the decoding step will iteratively
-        run in rescaled versions of the image aiming to decode the QR code at one of these sizes.
-
-        :param image: np.ndarray. The image to be read. It must be an uint8 numpy array (HxW[xC]).
-        :param rescale_factors: tuple[float|int, ...]. Factors to be used for rescaling the image if the QR is detected
-                                                       Default: (1, 2, 0.5, 4, 0.25).
-        :param min_img_size_to_check: int. The minimum size of the image to be inspected. No resizes will be
-                                           done below this size. Default: 16.
-        :param max_image_size_to_check: int. The maximum size of the image to be inspected. No resizes will be
-                                             done above this size. Default: 2048.
-
-        :return: str|None. The decodedQR or None if it couldn't be detected
-        """
-
-        # Try to detect the QR code in the whole image
-        found, bbox = self.detect(image)
-
-        if found:
-            # Crop the QR code
-            x1, y1, x2, y2 = bbox
-            cropped_img = image[y1:y2, x1:x2]
-
-            # Try to decode the QR code by iteratively rescaling the image
-            for rescale in rescale_factors:
-                # Avoid to rescale the image too big or too small
-                if any(not min_img_size_to_check < axis*rescale < max_image_size_to_check for axis in cropped_img.shape[:2]):
-                    continue
-
-                resized_img = resize(src=cropped_img, dsize=None, fx=rescale, fy=rescale, interpolation=cv2.INTER_CUBIC)
-
-                decodedQR = self.decode(image=resized_img, bbox=None)
-                # If something is decoded, return it
-                if decodedQR is not None:
-                    return decodedQR
-
-        return None
+            return decoded_qrs
