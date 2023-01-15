@@ -58,20 +58,24 @@ class QReader:
             x1, y1, x2, y2 = bbox
             image = image[y1:y2, x1:x2]
 
-        # Try to decode the QR code just with pyzbar
-        decodedQR = decodeQR(image=image, symbols=[ZBarSymbol.QRCODE])
-        if len(decodedQR) == 0:
-            # Let's try some desperate postprocessing
-            sharpened_img = cv2.cvtColor(cv2.filter2D(src=image, ddepth=-1, kernel=_SHARPEN_KERNEL), cv2.COLOR_RGB2GRAY)
-            _, binary_img = cv2.threshold(sharpened_img, thresh=0, maxval=255, type=cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-            decodedQR = decodeQR(image=binary_img, symbols=[ZBarSymbol.QRCODE])
+        for resize_factor in (1, 0.5, 2, 0.33, 3, 0.25, 4):
+            # Don't exceed 1024 image size limit (Nothing will be better decoded beyond this size)
+            if resize_factor > 1 and (image.shape[0] * resize_factor > 1024 or image.shape[1] * resize_factor > 1024):
+                continue
+            resized_image = cv2.resize(image, dsize=None, fx=resize_factor, fy=resize_factor, interpolation=cv2.INTER_CUBIC)
+            # Try to decode the QR code just with pyzbar
+            decodedQR = decodeQR(image=resized_image, symbols=[ZBarSymbol.QRCODE])
             if len(decodedQR) == 0:
-                # Blurring the sharpened image just a bit, works sometimes
-                decodedQR = decodeQR(image=cv2.GaussianBlur(src=sharpened_img, ksize=(3, 3), sigmaX=0))
-
-        decodedQR = decodedQR[0].data.decode("utf-8") if len(decodedQR) > 0 else None
-
-        return decodedQR
+                # Let's try some desperate postprocessing
+                sharpened_img = cv2.cvtColor(cv2.filter2D(src=resized_image, ddepth=-1, kernel=_SHARPEN_KERNEL), cv2.COLOR_RGB2GRAY)
+                _, binary_img = cv2.threshold(sharpened_img, thresh=0, maxval=255, type=cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+                decodedQR = decodeQR(image=binary_img, symbols=[ZBarSymbol.QRCODE])
+                if len(decodedQR) == 0:
+                    # Blurring the sharpened image just a bit, works sometimes
+                    decodedQR = decodeQR(image=cv2.GaussianBlur(src=sharpened_img, ksize=(3, 3), sigmaX=0))
+            if len(decodedQR) > 0:
+                return decodedQR[0].data.decode("utf-8")
+        return None
 
     def detect_and_decode(self, image: np.ndarray, return_bboxes: bool = False) -> \
             tuple[tuple[tuple[int, int, int, int], str | None], ...] | tuple[str|None, ...]:
