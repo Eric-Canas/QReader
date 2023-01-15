@@ -112,8 +112,8 @@ for img_path in ('test_mobile.jpeg', 'test_draw_64x64.jpeg'):
 The output of the previous code is:
 
 ```txt
-Image: test_mobile.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: ().
-Image: test_draw_64x64.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: ().
+Image: test_mobile.jpeg -> QReader: ('https://github.com/Eric-Canas/QReader'). OpenCV: . pyzbar: ().
+Image: test_draw_64x64.jpeg -> QReader: ('https://github.com/Eric-Canas/QReader'). OpenCV: . pyzbar: ().
 ```
 
 Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder**. The improved **detection-decoding rate** that **QReader** achieves comes from the combination of different image pre-processing techniques and the **YOLOv7** based **QR** detector that is able to detect **QR** codes in harder conditions than classical _Computer Vision_ methods.
