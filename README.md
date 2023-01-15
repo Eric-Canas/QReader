@@ -43,15 +43,15 @@ image = cv2.cvtColor(cv2.imread("path/to/image.png"), cv2.COLOR_BGR2RGB)
 decoded_text = qreader.detect_and_decode(image=image)
 ```
 
-``detect_and_decode`` will return a `tuple` containing the decoded _string_ of every QR found in the image. 
-    **NOTE**: Some entries can be `None`, when a QR have been detected but **couldn't be decoded**.
+``detect_and_decode`` will return a `tuple` containing the decoded _string_ of every **QR** found in the image. 
+ **NOTE**: Some entries can be `None`, it will happen when a **QR** have been detected but **couldn't be decoded**.
 
 
 ## API Reference
 
 ### QReader.detect_and_decode(image, return_bboxes = False)
 
-This method will decode the _QR_ codes in the given image and return the decoded _strings_ (or None, if any of them could be detected but not decoded).
+This method will decode the **QR** codes in the given image and return the decoded _strings_ (or None, if any of them could be detected but not decoded).
 
 - ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_], RGB.
 - ``return_bboxes``: **boolean**. If ``True``, it will also return the bboxes of each detected **QR**. Default: `False`
@@ -61,25 +61,25 @@ This method will decode the _QR_ codes in the given image and return the decoded
 
 ### QReader.detect(image)
 
-This method detects the _QR_ codes in the image and returns the **bounding boxes** surrounding them in the format (_x1_, _y1_, _x2_, _y2_). 
+This method detects the **QR** codes in the image and returns the **bounding boxes** surrounding them in the format (_x1_, _y1_, _x2_, _y2_). 
 
 - ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_], RGB.
 
 
-- Returns: **tuple[tuple[int, int, int, int]]**. The bounding boxes of the _QR_ code in the format `((x1_1, y1_1, x2_1, y2_1), (x1_1, y1_1, x2_1, x2_2))`.
+- Returns: **tuple[tuple[int, int, int, int]]**. The bounding boxes of the **QR** code in the format `((x1_1, y1_1, x2_1, y2_1), (x1_1, y1_1, x2_1, x2_2))`.
 
 
 ### QReader.decode(image, bbox = None)
 
-This method decodes a single _QR_ code on the given image, if a ``bbox`` is given (recommended) it will only look within that delimited region.
+This method decodes a single **QR** code on the given image, if a ``bbox`` is given (recommended) it will only look within that delimited region.
 
 Internally, this method will run the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> decoder, using different image preprocessing techniques (_sharpening_, _binarization_, _blurring_...) every time it fails to increase the detection rate.
 
 - ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_], RGB.
-- ``bbox``: **tuple[int, int, int, int] | None**. The bounding box of the _QR_ code in the format (_x1_, _y1_, _x2_, _y2_) [that's the output of `detect`]. If ``None``, it will look for the _QR_ code in the whole image (not recommended). Default: ``None``.
+- ``bbox``: **tuple[int, int, int, int] | None**. The bounding box of the **QR** code in the format (_x1_, _y1_, _x2_, _y2_) [that's the output of `detect`]. If ``None``, it will look for the **QR** code in the whole image (not recommended). Default: ``None``.
 
 
-- Returns: **str**. The decoded text of the _QR_ code. If no **QR** code can be decoded, it will return ``None``.
+- Returns: **str**. The decoded text of the **QR** code. If no **QR** code can be decoded, it will return ``None``.
 
 ## Usage Tests
 <div><img alt="test_on_mobile" title="test_on_mobile" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_mobile.jpeg" width="60%"><img alt="" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_draw_64x64.jpeg" width="32%" align="right"></div>
