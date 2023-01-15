@@ -1,10 +1,8 @@
 # QReader
 
-<img alt="QReader" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/logo.png" width="25%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** **QR** codes within images in **Python**. Powered by a **YOLOv7** model.
+<img alt="QReader" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** **QR** codes within images in **Python**. Powered by a **YOLOv7** model.
 
-Behind the scenes, this library is composed by:
-  - A **QR Detector**: Based on a **YOLOv7** _object detection_ model trained on a large dataset of QR codes. This **detector** is also offered as a standalone package: <a href="https://github.com/Eric-Canas/qrdet" target="_blank">qrdet</a>.
-  - A **QR Decoder**: **QReader** uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> as **Decoder**. When it fails, it transparently combine different image preprocessing techniques as fallback to maximize the **decoding** rate on difficult images.
+Behind the scenes, the library is composed by two main building blocks: A **QR Detector** based on a **YOLOv7** _object detection_ model trained on a large dataset of QR codes, and the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> **QR Decoder**. As well as different image preprocessing techniques that **QReader** transparently combine to maximize the **decoding** rate on difficult images. The **YOLOv7 QR Detector** is also offered as a **standalone** package through <a href="https://github.com/Eric-Canas/qrdet" target="_blank">Pyzbar</a>
 
 ## Installation
 
