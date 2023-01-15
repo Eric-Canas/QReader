@@ -1,8 +1,11 @@
 # QReader
 
-<img alt="QReader" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** _QR_ codes within images in **Python**.
+<img alt="QReader" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** _QR_ codes within images in **Python**. Powered by a **YOLOv7** model.
 
-Behind the scenes, this detector is based on several other **Detectors** & **Decoders**, such as <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a>, <a href="https://opencv.org/" target="_blank">OpenCV</a> and <a href="https://github.com/Gbellport/QR-code-localization-YOLOv3" target="_blank">YoloV3</a>, as well as different image preprocessing techniques. **QReader** will transparently combine all these techniques to maximize the detection rate on difficult images (e.g. _QR_ code too small).
+Behind the scenes, this library is composed by:
+  - A **QR Detector**: Based on a **YOLOv7** _object detection_ model trained on a large dataset of QR codes. This **detector** is also offered as a standalone package: <a href="https://github.com/Eric-Canas/qrdet" target="_blank">qrdet</a>.
+       
+  - A **QR Decoder**: **QReader** uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> as **Decoder**. When it fails, it transparently combine different image preprocessing techniques as fallback to maximize the **decoding** rate on difficult images.
 
 ## Installation
 
@@ -43,44 +46,43 @@ image = cv2.imread("path/to/image.png")
 decoded_text = qreader.detect_and_decode(image=image)
 ```
 
-The ``detect_and_decode`` function will automatically apply several _QR_ **detection** (_OpenCV_, _YoloV3_, _sub-region search_...) and **decoding** methods (_sharpening_, _binarization_, _blurring_, _rescaling_...) until finding one able to retrieve the decoded _QR_ information within that image.
+``detect_and_decode`` will return a `tuple` containing the decoded _string_ of every QR found in the image. 
+    **NOTE**: Some entries can be `None`, when a QR have been detected but **couldn't be decoded**.
 
 
 ## API Reference
 
-### QReader.detect_and_decode(image, deep_search = True)
+### QReader.detect_and_decode(image, return_bboxes = False)
 
-This method will decode the _QR_ code in the given image and return the result. If the _QR_ code is not detected, it will  return ``None``.
+This method will decode the _QR_ codes in the given image and return the decoded _strings_ (or None, if any of them could be detected but not decoded).
 
-- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_].
-- ``deep_search``: **boolean**. If ``True``, it will make a deep search if the _QR_ can't be detected at the first attempt. This **deep search** will inspect subregions of the ``image`` to locate **difficult** and **small** _QR_ codes. It can be slightly slower but severally increases the detection rate. Default: True.
+- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_], RGB.
+- ``return_bboxes``: **boolean**. If ``True``, it will also return the bboxes of each detected **QR**. Default: `False`
 
 
-- Returns: **str**. The decoded text of the _QR_ code. If the _QR_ code is not detected, it will return ``None``.
+- Returns: **tuple[str | None] | tuple[tuple[tuple[int, int, int, int], str | None]]**: A tuple with all detected **QR** codes decodified. If ``return_bboxes`` is `False`, the output will look like: `('Decoded QR 1', 'Decoded QR 2', None, 'Decoded QR 4', ...)`. If ``return_bboxes`` is `True` it will look like: `(((x1_1, y1_1, x2_1, y2_1), 'Decoded QR 1'), ((x1_2, y1_2, x2_2, y2_2), 'Decoded QR 2'), ...)`.
 
 ### QReader.detect(image)
 
-This method detects the _QR_ in the image and returns the **bounding box** surrounding it in the format (_x1_, _y1_, _x2_, _y2_). 
+This method detects the _QR_ codes in the image and returns the **bounding boxes** surrounding them in the format (_x1_, _y1_, _x2_, _y2_). 
 
-This method will always assume that there is only one _QR_ code in the image.
-
-- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_].
+- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_], RGB.
 
 
-- Returns: **Tuple of Integers** or **None**. The bounding box of the _QR_ code in the format (_x1_, _y1_, _x2_, _y2_). If the _QR_ code is not detected, it will return ``None``.
+- Returns: **tuple[tuple[int, int, int, int]]**. The bounding boxes of the _QR_ code in the format `((x1_1, y1_1, x2_1, y2_1), (x1_1, y1_1, x2_1, x2_2))`.
 
 
 ### QReader.decode(image, bbox = None)
 
-This method decodes the _QR_ code of the given image, if a ``bbox`` is given it will only look within that delimited region.
+This method decodes a single _QR_ code on the given image, if a ``bbox`` is given (recommended) it will only look within that delimited region.
 
-Internally, this method will run the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> decoder, but sequentially using some image preprocessing techniques (_sharpening_, _binarization_, _blurring_...) to increase the detection rate.
+Internally, this method will run the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> decoder, using different image preprocessing techniques (_sharpening_, _binarization_, _blurring_...) every time it fails to increase the detection rate.
 
-- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_].
-- ``bbox``: **Tuple of Integers** or **None**. The bounding box of the _QR_ code in the format (_x1_, _y1_, _x2_, _y2_). If ``None``, it will look for the _QR_ code in the whole image. Default: ``None``.
+- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_], RGB.
+- ``bbox``: **tuple[int, int, int, int] | None**. The bounding box of the _QR_ code in the format (_x1_, _y1_, _x2_, _y2_) [that's the output of `detect`]. If ``None``, it will look for the _QR_ code in the whole image (not recommended). Default: ``None``.
 
 
-- Returns: **str**. The decoded text of the _QR_ code. If the _QR_ code is not detected, it will return ``None``.
+- Returns: **str**. The decoded text of the _QR_ code. If no **QR** code can be decoded, it will return ``None``.
 
 ## Usage Tests
 <div><img alt="test_on_mobile" title="test_on_mobile" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_mobile.jpeg" width="60%"><img alt="" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_draw_64x64.jpeg" width="32%" align="right"></div>
@@ -114,16 +116,16 @@ for img_path in ('test_mobile.jpeg', 'test_draw_64x64.jpeg'):
 The output of the previous code is:
 
 ```txt
-Image: test_mobile.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: .
-Image: test_draw_64x64.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: .
+Image: test_mobile.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: ().
+Image: test_draw_64x64.jpeg -> QReader: https://github.com/Eric-Canas/QReader. OpenCV: . pyzbar: ().
 ```
 
-Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder** and a combination of <a href="https://opencv.org/" target="_blank">OpenCV</a> and <a href="https://github.com/Gbellport/QR-code-localization-YOLOv3" target="_blank">YoloV3</a> for the **detector**. The improved **detection-decoding rate** that **QReader** achieves doesn't come from the usage of more powerful readers, but from the combination of the different image pre-processing and _QR_ search methods it applies.
+Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder**. The improved **detection-decoding rate** that **QReader** achieves comes from the combination of different image pre-processing techniques and the **YOLOv7** based **QR** detector that is able to detect **QR** codes in harder conditions than classical _Computer Vision_ methods.
 
 ## Acknowledgements
 
 This library is based on the following projects:
 
-- Pretrained model weights of <a href="https://github.com/Gbellport/QR-code-localization-YOLOv3" target="_blank">QR-code-locatiazation-YOLOv3</a> by <a href="https://github.com/Gbellport" target="_blank">Gabriel Bellport</a>.
-- <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> _QR_ Decoder.
-- <a href="https://opencv.org/" target="_blank">OpenCV</a> methods for image filtering and _QR_ Detection.
+- <a href="https://github.com/WongKinYiu/yolov7" target="_blank">YoloV7</a> model for **Object Detection**.
+- <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> **QR** Decoder.
+- <a href="https://opencv.org/" target="_blank">OpenCV</a> methods for image filtering.
