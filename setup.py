@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='qreader',
-    version='2.1',
+    version='2.2',
     packages=find_namespace_packages(),
     # expose qreader.py as the unique module
     py_modules=['qreader'],
@@ -11,7 +11,7 @@ setup(
     author='Eric Canas',
     author_email='elcorreodeharu@gmail.com',
     description='Robust and Straight-Forward solution for reading difficult and tricky QR codes '
-                'within images in Python. Supported by a YOLOv7 model.',
+                'within images in Python. Supported by a YOLOv7 QR Detection model.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     install_requires=[
