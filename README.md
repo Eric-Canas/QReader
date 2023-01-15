@@ -24,6 +24,7 @@ brew install zbar
 ```
 
 ## Usage
+<a href="https://colab.research.google.com/github/Eric-Canas/QReader/blob/main/example.ipynb" target="_blank"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab" data-canonical-src="https://colab.research.google.com/assets/colab-badge.svg" style="max-width: 100%;"></a>
 
 **QReader** is a very simple and straight-forward library. For most use cases, you'll only need to call ``detect_and_decode``:
 
@@ -36,7 +37,7 @@ import cv2
 qreader = QReader()
 
 # Get the image that contains the QR code (QReader expects an uint8 numpy array)
-image = cv2.imread("path/to/image.png")
+image = cv2.cvtColor(cv2.imread("path/to/image.png"), cv2.COLOR_BGR2RGB)
 
 # Use the detect_and_decode function to get the decoded QR data
 decoded_text = qreader.detect_and_decode(image=image)
