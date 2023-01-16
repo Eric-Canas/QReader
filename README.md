@@ -1,6 +1,6 @@
 # QReader
 
-<img alt="QReader" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** **QR** codes within images in **Python**. Powered by a <a href="https://github.com/Eric-Canas/qrdet" target="_blank">YOLOv7 model</a>.
+<img alt="QReader" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** **QR** codes within images in **Python**. Powered by a <a href="https://github.com/Eric-Canas/qrdet" target="_blank">YOLOv7</a> model.
 
 Behind the scenes, the library is composed by two main building blocks: A **QR Detector** based on a <a href="https://github.com/WongKinYiu/yolov7" target="_blank">YOLOv7</a> model trained on a large dataset of QR codes (also offered as <a href="https://github.com/Eric-Canas/qrdet" target="_blank">stand-alone</a>), and the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> **QR Decoder**. On top of <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a>, **QReader** transparently applyes different image preprocessing techniques that maximize the **decoding** rate on difficult images.
 ## Installation
@@ -117,7 +117,7 @@ Image: test_mobile.jpeg -> QReader: ('https://github.com/Eric-Canas/QReader'). O
 Image: test_draw_64x64.jpeg -> QReader: ('https://github.com/Eric-Canas/QReader'). OpenCV: . pyzbar: ().
 ```
 
-Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder**. The improved **detection-decoding rate** that **QReader** achieves comes from the combination of different image pre-processing techniques and the **YOLOv7** based **QR** detector that is able to detect **QR** codes in harder conditions than classical _Computer Vision_ methods.
+Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder**. The improved **detection-decoding rate** that **QReader** achieves comes from the combination of different image pre-processing techniques and the <a href="https://github.com/WongKinYiu/yolov7" target="_blank">YOLOv7</a> based <a href="https://github.com/Eric-Canas/qrdet" target="_blank">**QR** detector</a> that is able to detect **QR** codes in harder conditions than classical _Computer Vision_ methods.
 
 ## Acknowledgements
 
