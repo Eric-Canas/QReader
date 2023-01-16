@@ -1,8 +1,8 @@
 # QReader
 
-<img alt="QReader" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** **QR** codes within images in **Python**. Powered by a <a href="https://github.com/Eric-Canas/qrdet" target="_blank">YOLOv7</a> model.
+<img alt="QReader" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/logo.png" width="20%" align="left"> QReader is a **Robust** and **Straight-Forward** solution for reading **difficult** and **tricky** **QR** codes within images in **Python**. Powered by a <a href="https://github.com/Eric-Canas/qrdet" target="_blank">YOLOv7 model</a>.
 
-Behind the scenes, the library is composed by two main building blocks: A **QR Detector** based on a <a href="https://github.com/Eric-Canas/qrdet" target="_blank">YOLOv7</a> model trained on a large dataset of QR codes (also offered as <a href="https://github.com/Eric-Canas/qrdet" target="_blank">stand-alone</a>), and the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> **QR Decoder**. On top of <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a>, **QReader** transparently applyes different image preprocessing techniques that maximize the **decoding** rate on difficult images.
+Behind the scenes, the library is composed by two main building blocks: A **QR Detector** based on a <a href="https://github.com/WongKinYiu/yolov7" target="_blank">YOLOv7</a> model trained on a large dataset of QR codes (also offered as <a href="https://github.com/Eric-Canas/qrdet" target="_blank">stand-alone</a>), and the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> **QR Decoder**. On top of <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a>, **QReader** transparently applyes different image preprocessing techniques that maximize the **decoding** rate on difficult images.
 ## Installation
 
 To install **QReader**, simply run:
