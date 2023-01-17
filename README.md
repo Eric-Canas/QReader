@@ -68,6 +68,7 @@ This method detects the **QR** codes in the image and returns the **bounding box
 
 - Returns: **tuple[tuple[int, int, int, int]]**. The bounding boxes of the **QR** code in the format `((x1_1, y1_1, x2_1, y2_1), (x1_1, y1_1, x2_1, x2_2))`.
 
+**NOTE**: This the only function you will need? Take a look at <a href="https://github.com/Eric-Canas/qrdet" target="_blank">QRDet</a>.
 
 ### QReader.decode(image, bbox = None)
 
