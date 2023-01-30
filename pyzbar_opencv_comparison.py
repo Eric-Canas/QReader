@@ -20,8 +20,8 @@ if __name__ == '__main__':
         qreader_out = qreader_reader.detect_and_decode(image=img)
         cv2_out = cv2_reader.detectAndDecode(img=img)[0]
         pyzbar_out = pyzbar_reader(image=img)
-        # Read the content of the pyzbar output
-        pyzbar_out = tuple(out.data.decode('utf-8') for out in pyzbar_out)
+        # Read the content of the pyzbar output (double decoding trick is needed to solve possible encoding issues)
+        pyzbar_out = tuple(out.data.data.decode('utf-8').encode('shift-jis').decode('utf-8') for out in pyzbar_out)
 
         # Print the results
         print(f"Image: {img_path} -> QReader: {qreader_out}. OpenCV: {cv2_out}. pyzbar: {pyzbar_out}.")

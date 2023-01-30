@@ -74,7 +74,11 @@ class QReader:
                     # Blurring the sharpened image just a bit, works sometimes
                     decodedQR = decodeQR(image=cv2.GaussianBlur(src=sharpened_img, ksize=(3, 3), sigmaX=0))
             if len(decodedQR) > 0:
-                return decodedQR[0].data.decode("utf-8")
+                try:
+                    return decodedQR[0].data.decode('utf-8').encode('shift-jis').decode('utf-8')
+                except UnicodeDecodeError:
+                    # When double decoding fails, just return the decoded string assuming it could have weird characters
+                    return decodedQR[0].data.decode('utf-8')
         return None
 
     def detect_and_decode(self, image: np.ndarray, return_bboxes: bool = False) -> \
