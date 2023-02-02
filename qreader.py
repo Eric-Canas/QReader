@@ -16,7 +16,7 @@ from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol
 import cv2
 
 from qrdet import QRDetector
-_SHARPEN_KERNEL = np.array(((-1, -1, -1), (-1, 9, -1), (-1, -1, -1)), dtype=np.float32)
+_SHARPEN_KERNEL = np.array(((-1., -1., -1.), (-1., 9., -1.), (-1., -1., -1.)), dtype=np.float32)
 
 class QReader:
     def __init__(self):
