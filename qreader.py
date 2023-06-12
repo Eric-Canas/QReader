@@ -72,7 +72,7 @@ class QReader:
                 decodedQR = decodeQR(image=binary_img, symbols=[ZBarSymbol.QRCODE])
                 if len(decodedQR) == 0:
                     # Blurring the sharpened image just a bit, works sometimes
-                    decodedQR = decodeQR(image=cv2.GaussianBlur(src=sharpened_img, ksize=(3, 3), sigmaX=0))
+                    decodedQR = decodeQR(image=cv2.GaussianBlur(src=sharpened_img, ksize=(3, 3), sigmaX=0), symbols=[ZBarSymbol.QRCODE])
             if len(decodedQR) > 0:
                 try:
                     return decodedQR[0].data.decode('utf-8').encode('shift-jis').decode('utf-8')
