@@ -51,6 +51,14 @@ decoded_text = qreader.detect_and_decode(image=image)
 
 ## API Reference
 
+### QReader(reencode_to = 'shift-jis')
+
+This is the main class of the library. Please, try to instantiate it just once to avoid loading the model every time 
+you need to detect a **QR** code.
+- ``reencode_to``: **str** or **None**. The encoding to reencode the `utf-8` decoded QR string. If None, it won't re-encode. If you find some characters being decoded incorrectly, try to set a [Code Page](https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your specific charset. Recommendations that have been found useful:
+  - 'shift-jis' for Germanic languages
+  - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
+
 ### QReader.detect_and_decode(image, return_bboxes = False)
 
 This method will decode the **QR** codes in the given image and return the decoded _strings_ (or None, if any of them could be detected but not decoded).

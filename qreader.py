@@ -10,7 +10,7 @@ Github: https://github.com/Eric-Canas
 """
 
 from __future__ import annotations
-
+from warnings import warn
 import numpy as np
 from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol, Decoded
 import cv2
@@ -19,13 +19,21 @@ from qrdet import QRDetector
 _SHARPEN_KERNEL = np.array(((-1., -1., -1.), (-1., 9., -1.), (-1., -1., -1.)), dtype=np.float32)
 
 class QReader:
-    def __init__(self):
+    def __init__(self, reencode_to: str | None = 'shift-jis'):
         """
         This class implements a robust, ML Based QR detector & decoder.
+        
+        :param reencode_to: str or None. The encoding to reencode the decoded QR code. If None, it will do just a one-step
+        encoding to utf-8. If you find some characters being decoded incorrectly, try to reencode to a
+        [Code Page](https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your
+        specific charset. Recommendations that have been found useful:
+            - 'shift-jis' for Germanic languages
+            - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
         """
         self.detector = QRDetector()
+        self.reencode_to = reencode_to
 
-    def detect(self, image: np.ndarray, min_confidence=0.6) -> tuple[tuple[int, int, int, int], ...]:
+    def detect(self, image: np.ndarray, min_confidence: float =0.6) -> tuple[tuple[int, int, int, int], ...]:
         """
         This method will detect the QRs in the image and return the bounding boxes of the QR codes. If the QR code is
         not detected, it will return an empty tuple.
@@ -66,11 +74,14 @@ class QReader:
             # Try to decode the QR code just with pyzbar
             decodedQR = self.decode_qr_zbar(image=resized_image)
             if len(decodedQR) > 0:
-                try:
-                    return decodedQR[0].data.decode('utf-8').encode('shift-jis').decode('utf-8')
-                except UnicodeDecodeError:
-                    # When double decoding fails, just return the decoded string assuming it could have weird characters
-                    return decodedQR[0].data.decode('utf-8')
+                decoded_str = decodedQR[0].data.decode('utf-8')
+                if self.reencode_to is not None and self.reencode_to != 'utf-8':
+                    try:
+                        decoded_str = decoded_str.encode(self.reencode_to).decode('utf-8')
+                    except (UnicodeDecodeError, UnicodeEncodeError):
+                        # When double decoding fails, just return the first decoded string with utf-8
+                        warn(f'Double decoding failed for {self.reencode_to}. Returning utf-8 decoded string.')
+                return decoded_str
         return None
 
     def decode_qr_zbar(self, image: np.ndarray)-> list[Decoded]:

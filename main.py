@@ -2,7 +2,7 @@ from qreader import QReader
 import cv2
 import os
 
-SAMPLE_IMG = os.path.join(os.path.dirname(__file__), 'documentation', 'resources', 'qr_in_the_wild.jpg')
+SAMPLE_IMG = os.path.join(os.path.dirname(__file__), 'documentation', 'resources', 'difficult_encoding.png')
 
 if __name__ == '__main__':
     # Initialize QReader
