@@ -13,15 +13,16 @@ pip install qreader
 
 You may need to install some additional **pyzbar** dependencies:
 
-On Windows:
+On *Windows*:
+
 If you see an ugly ImportError related with `lizbar-64.dll`, install the [vcredist_x64.exe](https://www.microsoft.com/en-gb/download/details.aspx?id=40784) from the _Visual C++ Redistributable Packages for Visual Studio 2013_
 
-On Linux:
+On *Linux*:
 ```bash
 sudo apt-get install libzbar0
 ```
 
-On Mac OS X:
+On *Mac OS X*:
 ```bash
 brew install zbar
 ```
