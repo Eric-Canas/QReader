@@ -15,14 +15,18 @@ import numpy as np
 from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol, Decoded
 import cv2
 
-from qrdet import QRDetector
+from qrdet import QRDetector, BBOX_XYXY
+
 _SHARPEN_KERNEL = np.array(((-1., -1., -1.), (-1., 9., -1.), (-1., -1., -1.)), dtype=np.float32)
 
 class QReader:
-    def __init__(self, reencode_to: str | None = 'shift-jis'):
+    def __init__(self, model_size: str = 's', min_confidence: float = 0.5, reencode_to: str | None = 'shift-jis'):
         """
         This class implements a robust, ML Based QR detector & decoder.
-        
+
+        :param model_size: str. The size of the model to use. It can be 'n' (nano), 's' (small), 'm' (medium) or
+                                'l' (large). Larger models are more accurate but slower. Default (and recommended): 's'.
+        :param min_confidence: float. The minimum confidence of the QR detection to be considered valid. Default: 0.5.
         :param reencode_to: str or None. The encoding to reencode the decoded QR code. If None, it will do just a one-step
         encoding to utf-8. If you find some characters being decoded incorrectly, try to reencode to a
         [Code Page](https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your
@@ -30,41 +34,48 @@ class QReader:
             - 'shift-jis' for Germanic languages
             - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
         """
-        self.detector = QRDetector()
+        self.detector = QRDetector(conf_th=min_confidence)
         self.reencode_to = reencode_to
 
-    def detect(self, image: np.ndarray, min_confidence: float =0.6) -> tuple[tuple[int, int, int, int], ...]:
+    def detect(self, image: np.ndarray) -> tuple[dict[str, np.ndarray|float|tuple[float|int, float|int]]]:
         """
-        This method will detect the QRs in the image and return the bounding boxes of the QR codes. If the QR code is
-        not detected, it will return an empty tuple.
+        This method will detect the QRs in the image and return a tuple of dictionaries with all the detection
+        information.
 
-        :return: tuple[int, int, int, int], ...]. A tuple with the bounding boxes of the detected QR codes
-                                                  in the format (x1, y1, x2, y2). If no QR code is detected, it will
-                                                  return an empty tuple.
+        :return: tuple[dict[str, np.ndarray|float|tuple[float|int, float|int]]]. A tuple of dictionaries containing the
+            following keys:
+            - 'confidence': float. The confidence of the detection.
+            - 'bbox_xyxy': np.ndarray. The bounding box of the detection in the format [x1, y1, x2, y2].
+            - 'cxcy': tuple[float, float]. The center of the bounding box in the format (x, y).
+            - 'wh': tuple[float, float]. The width and height of the bounding box in the format (w, h).
+            - 'polygon_xy': np.ndarray. The accurate polygon that surrounds the QR code, with shape (N, 2).
+            - 'quadrilateral_xy': np.ndarray. The quadrilateral that surrounds the QR code, with shape (4, 2).
+                                              Fitted from the polygon.
+            - 'expanded_quadrilateral_xy': np.ndarray. An expanded version of quadrilateral_xy, with shape (4, 2),
+                that always include all the points within polygon_xy.
 
+            All these keys (except 'confidence') have a 'n' (normalized) version. For example, 'bbox_xyxy' is the
+            bounding box in absolute coordinates, while 'bbox_xyxyn' is the bounding box in normalized coordinates
+            (from 0. to 1.).
         """
+        return self.detector.detect(image=image)
 
-        detections = self.detector.detect(image=image, return_confidences=True, as_float=False)
-        detections = tuple(tuple(detection) for detection, confidence in detections if confidence >= min_confidence)
-
-        return detections
-
-    def decode(self, image: np.ndarray, bbox: tuple[int, int, int, int] | None = None) -> str | None:
+    def decode(self, image: np.ndarray, detection_result: dict[str, np.ndarray|float|tuple[float|int, float|int]]) -> \
+            str | None:
         """
-        This method is just a wrapper of pyzbar decodeQR method, that will try to apply image pre-processing when the
-        QR code is not readed for the first time.
+        This method is a wrapper of pyzbar decodeQR method, that takes profit of the information of each
+         detection_result to apply image pre-processing techniques that will maximize the decoding rate.
 
         :param image: np.ndarray. The image to be read. It must be a np.ndarray (HxWxC) (uint8).
-        :param bbox: tuple[int, int, int, int]. The bounding box of the QR code in the format (x1, y1, x2, y2) (can be
-                                                obtained with the detect method. If None, it will try to read the QR from
-                                                the whole image. Not recommended. Default: None.
-
+        :param detection_result: dict[str, np.ndarray|float|tuple[float|int, float|int]]. One of the detection dicts
+            returned by the detect method. Note that QReader.detect() returns a tuple of these dicts. This method
+            expects just one of them.
         :return: str|None. The decoded content of the QR code or None if it can not be read.
         """
         # Crop the image if a bounding box is given
-        if bbox is not None:
-            x1, y1, x2, y2 = bbox
-            image = image[y1:y2, x1:x2]
+        bbox = detection_result[BBOX_XYXY]
+        x1, y1, x2, y2 = tuple(int(coord) for coord in bbox)
+        image = image[y1:y2, x1:x2]
 
         for resize_factor in (1, 0.5, 2, 0.33, 3, 0.25):
             # Don't exceed 1024 image size limit (Nothing will be better decoded beyond this size)
@@ -146,7 +157,7 @@ class QReader:
         return []
 
 
-    def detect_and_decode(self, image: np.ndarray, return_bboxes: bool = False) -> \
+    def detect_and_decode(self, image: np.ndarray, return_detections: bool = False) -> \
             tuple[tuple[tuple[int, int, int, int], str | None], ...] | tuple[str|None, ...]:
         """
         This method will decode all the QR codes in the image and return the decoded results (or None if there is
@@ -162,10 +173,11 @@ class QReader:
                     code can not be decoded.
 
         """
-        bboxes = self.detect(image=image)
-        decoded_qrs = tuple(self.decode(image=image, bbox=bbox) for bbox in bboxes)
+        detections = self.detect(image=image)
+        decoded_qrs = tuple(self.decode(image=image, detection_result=detection) for detection in detections)
 
-        if return_bboxes:
-            return tuple(zip(bboxes, decoded_qrs))
+
+        if return_detections:
+            return tuple(zip(detections, decoded_qrs))
         else:
             return decoded_qrs
