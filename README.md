@@ -17,7 +17,7 @@ You may need to install some additional **pyzbar** dependencies:
 
 On **Windows**:  
 
-If you see an ugly ImportError related with `lizbar-64.dll`, install the [vcredist_x64.exe](https://www.microsoft.com/en-gb/download/details.aspx?id=40784) from the _Visual C++ Redistributable Packages for Visual Studio 2013_
+Rarely, you can see an ugly ImportError related with `lizbar-64.dll`. If it happens, install the [vcredist_x64.exe](https://www.microsoft.com/en-gb/download/details.aspx?id=40784) from the _Visual C++ Redistributable Packages for Visual Studio 2013_
 
 On **Linux**:  
 ```bash
@@ -44,7 +44,7 @@ import cv2
 # Create a QReader instance
 qreader = QReader()
 
-# Get the image that contains the QR code (QReader expects an uint8 numpy array)
+# Get the image that contains the QR code
 image = cv2.cvtColor(cv2.imread("path/to/image.png"), cv2.COLOR_BGR2RGB)
 
 # Use the detect_and_decode function to get the decoded QR data
@@ -52,16 +52,18 @@ decoded_text = qreader.detect_and_decode(image=image)
 ```
 
 ``detect_and_decode`` will return a `tuple` containing the decoded _string_ of every **QR** found in the image. 
+
  **NOTE**: Some entries can be `None`, it will happen when a **QR** have been detected but **couldn't be decoded**.
 
 
 ## API Reference
 
-### QReader(reencode_to = 'shift-jis')
+### QReader(model_size = 's', reencode_to = 'shift-jis')
 
-This is the main class of the library. Please, try to instantiate it just once to avoid loading the model every time 
-you need to detect a **QR** code.
-- ``reencode_to``: **str** or **None**. The encoding to reencode the `utf-8` decoded QR string. If None, it won't re-encode. If you find some characters being decoded incorrectly, try to set a [Code Page](https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your specific charset. Recommendations that have been found useful:
+This is the main class of the library. Please, try to instantiate it just once to avoid loading the model every time you need to detect a **QR** code.
+- ``model_size``: **str**. The size of the model to use. It can be **'n'** (nano), **'s'** (small), **'m'** (medium) or **'l'** (large). Larger models are more accurate but slower. Default: 's'.
+- ``min_confidence``: **float**. The minimum confidence of the QR detection to be considered valid. Values closer to 0.0 can get more _False Positives_, while values closer to 1.0 can lose difficult QRs. Default (and recommended): 0.5.
+- ``reencode_to``: **str** | **None**. The encoding to reencode the `utf-8` decoded QR string. If None, it won't re-encode. If you find some characters being decoded incorrectly, try to set a [Code Page](https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your specific charset. Recommendations that have been found useful:
   - 'shift-jis' for Germanic languages
   - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
 
