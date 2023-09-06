@@ -67,11 +67,12 @@ This is the main class of the library. Please, try to instantiate it just once t
   - 'shift-jis' for Germanic languages
   - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
 
-### QReader.detect_and_decode(image, return_bboxes = False)
+### QReader.detect_and_decode(image, return_detections = False)
 
-This method will decode the **QR** codes in the given image and return the decoded _strings_ (or None, if any of them could be detected but not decoded).
+This method will decode the **QR** codes in the given image and return the decoded _strings_ (or _None_, if any of them was detected but not decoded).
 
 - ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image is expected to be in ``uint8`` format [_HxWxC_], RGB.
+- 
 - ``return_bboxes``: **boolean**. If ``True``, it will also return the bboxes of each detected **QR**. Default: `False`
 
 
