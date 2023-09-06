@@ -58,7 +58,7 @@ decoded_text = qreader.detect_and_decode(image=image)
 
 ## API Reference
 
-### QReader(model_size = 's', reencode_to = 'shift-jis')
+### QReader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift-jis')
 
 This is the main class of the library. Please, try to instantiate it just once to avoid loading the model every time you need to detect a **QR** code.
 - ``model_size``: **str**. The size of the model to use. It can be **'n'** (nano), **'s'** (small), **'m'** (medium) or **'l'** (large). Larger models are more accurate but slower. Default: 's'.
