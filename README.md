@@ -71,21 +71,33 @@ This is the main class of the library. Please, try to instantiate it just once t
 
 This method will decode the **QR** codes in the given image and return the decoded _strings_ (or _None_, if any of them was detected but not decoded).
 
-- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image is expected to be in ``uint8`` format [_HxWxC_], RGB.
-- 
-- ``return_bboxes``: **boolean**. If ``True``, it will also return the bboxes of each detected **QR**. Default: `False`
+- ``image``: **np.ndarray**. The image to be read. It is expected to be _RGB_ or _BGR_ (_uint8_). Format (_HxWx3_).
+- ``return_detections``: **bool**. If `True`, it will return the full detection results together with the decoded QRs. If False, it will return only the decoded content of the QR codes.
+- ``is_bgr``: **boolean**. If `True`, the received image is expected to be _BGR_ instead of _RGB_.
 
-
-- Returns: **tuple[str | None] | tuple[tuple[tuple[int, int, int, int], str | None]]**: A tuple with all detected **QR** codes decodified. If ``return_bboxes`` is `False`, the output will look like: `('Decoded QR 1', 'Decoded QR 2', None, 'Decoded QR 4', ...)`. If ``return_bboxes`` is `True` it will look like: `(((x1_1, y1_1, x2_1, y2_1), 'Decoded QR 1'), ((x1_2, y1_2, x2_2, y2_2), 'Decoded QR 2'), ...)`.
+- **Returns**: **tuple[str | None] | tuple[tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]]], str | None]]**: A tuple with all detected **QR** codes decodified. If ``return_detections`` is `False`, the output will look like: `('Decoded QR 1', 'Decoded QR 2', None, 'Decoded QR 4', ...)`. If ``return_detections`` is `True` it will look like: `(('Decoded QR 1', {'bbox_xyxy': (x1_1, y1_1, x2_1, y2_1), 'confidence': conf_1}), ('Decoded QR 2', {'bbox_xyxy': (x1_2, y1_2, x2_2, y2_2), 'confidence': conf_2, ...}), ...)`. Look QReader.detect() for more information about detections format.
 
 ### QReader.detect(image)
 
-This method detects the **QR** codes in the image and returns the **bounding boxes** surrounding them in the format (_x1_, _y1_, _x2_, _y2_). 
+This method detects the **QR** codes in the image and return a tuple of dictionaries with all the detection information.
 
-- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_], RGB.
+- ``image``: **np.ndarray**. The image to be read. It is expected to be _RGB_ or _BGR_ (_uint8_). Format (_HxWx3_).
+- ``is_bgr``: **boolean**. If `True`, the received image is expected to be _BGR_ instead of _RGB_.
 
+- **Returns**: **tuple[dict[str, np.ndarray|float|tuple[float|int, float|int]]]**. A tuple of dictionaries containing all the information of every detection. Contains the following keys.
 
-- Returns: **tuple[tuple[int, int, int, int]]**. The bounding boxes of the **QR** code in the format `((x1_1, y1_1, x2_1, y2_1), (x1_1, y1_1, x2_1, x2_2))`.
+| Key                        | Value Desc.                        | Value Type          | Example                               |
+|----------------------------|------------------------------------|---------------------|---------------------------------------|
+| `confidence`               | Detection confidence               | float               | 0.95                                  |
+| `bbox_xyxy`                | Bounding box `[x1, y1, x2, y2]`    | np.ndarray          | `[30.4, 40.3, 50.1, 60.2]`                    |
+| `cxcy`                     | Center of bounding box `(x, y)`    | tuple[float, float] | `(40.0, 50.2)`                            |
+| `wh`                       | Width and height `(w, h)`          | tuple[float, float] | `(20.1, 30.6)`                            |
+| `polygon_xy`               | Polygon around QR code             | np.ndarray (N, 2)   | `[[10., 20.], [30., 40.], ...]`           |
+| `quadrilateral_xy`         | Quadrilateral around QR code       | np.ndarray (4, 2)   | `[[10., 20.], [30., 40.], [50., 60.], [70., 80.]]` |
+| `expanded_quadrilateral_xy`| Expanded quadrilateral             | np.ndarray (4, 2)   | `[[5., 15.], [25., 35.], [45., 55.], [65., 75.]]` |
+
+> **NOTE:** All keys except `confidence` have a normalized ('n') version, which scales the values between 0 and 1. For example, `bbox_xyxyn` would represent the bounding box in normalized coordinates.
+
 
 **NOTE**: This the only function you will need? Take a look at <a href="https://github.com/Eric-Canas/qrdet" target="_blank">QRDet</a>.
 
