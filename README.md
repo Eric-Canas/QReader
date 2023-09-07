@@ -95,7 +95,7 @@ This method detects the **QR** codes in the image and return a tuple of dictiona
 | `polygon_xy`     | Precise polygon that segments the _QR_      | np.ndarray (**N**, **2**)  | `[[x1, y1], [x2, y2], ...]` |
 | `quad_xy`        | Four corners polygon that segments the _QR_ | np.ndarray (**4**, **2**)  | `[[x1, y1], ..., [x4, y4]]` |
 | `padded_quad_xy` |`quad_xy` padded to fully cover `polygon_xy` | np.ndarray (**4**, **2**)  | `[[x1, y1], ..., [x4, y4]]` |
-| `image_shape`    | Shape of the input image                    | tuple[`float`, `float`]    | `(h, w)`                    |  
+| `image_shape`    | Shape of the input image                    | tuple[`int`, `int`]    | `(h, w)`                    |  
 
 > **NOTE:**
 > - All `np.ndarray` values are of type `np.float32` 
@@ -103,19 +103,19 @@ This method detects the **QR** codes in the image and return a tuple of dictiona
 > - `bbox_xyxy[n]` and `polygon_xy[n]` are clipped to `image_shape`. You can use them for indexing without further management
 
 
-**NOTE**: This the only function you will need? Take a look at <a href="https://github.com/Eric-Canas/qrdet" target="_blank">QRDet</a>.
+**NOTE**: Is this the only method you will need? Take a look at <a href="https://github.com/Eric-Canas/qrdet" target="_blank">QRDet</a>.
 
-### QReader.decode(image, bbox = None)
+### QReader.decode(image, detection_result)
 
-This method decodes a single **QR** code on the given image, if a ``bbox`` is given (recommended) it will only look within that delimited region.
+This method decodes a single **QR** code on the given image, described by a detection result. 
 
-Internally, this method will run the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> decoder, using different image preprocessing techniques (_sharpening_, _binarization_, _blurring_...) every time it fails to increase the detection rate.
+Internally, this method will run the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> decoder, using the information of the `detection_result`, to apply different image preprocessing techniques that heavily increase the detecoding rate.
 
-- ``image``: **np.ndarray**. NumPy Array containing the ``image`` to decode. The image must is expected to be in ``uint8`` format [_HxWxC_], RGB.
-- ``bbox``: **tuple[int, int, int, int] | None**. The bounding box of the **QR** code in the format (_x1_, _y1_, _x2_, _y2_) [that's the output of `detect`]. If ``None``, it will look for the **QR** code in the whole image (not recommended). Default: ``None``.
+- ``image``: **np.ndarray**. NumPy Array with the ``image`` that contains the _QR_ to decode. The image is expected to be in ``uint8`` format [_HxWxC_], RGB.
+- ``detection_result``: dict[str, np.ndarray|float|tuple[float|int, float|int]]. One of the **detection dicts** returned by the **detect** method. Note that **QReader.detect()** returns a `tuple` of these `dict`. This method expects just one of them.
 
 
-- Returns: **str**. The decoded text of the **QR** code. If no **QR** code can be decoded, it will return ``None``.
+- Returns: **str | None**. The decoded content of the _QR_ code or `None` if it couldn't be read.
 
 ## Usage Tests
 <div><img alt="test_on_mobile" title="test_on_mobile" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_mobile.jpeg" width="60%"><img alt="" title="QReader" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/resources/test_draw_64x64.jpeg" width="32%" align="right"></div>
