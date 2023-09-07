@@ -11,14 +11,14 @@ setup(
     author='Eric Canas',
     author_email='elcorreodeharu@gmail.com',
     description='Robust and Straight-Forward solution for reading difficult and tricky QR codes '
-                'within images in Python. Supported by a YOLOv7 QR Detection model.',
+                'within images in Python. Supported by a YOLOv8 QR Segmentation model.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     install_requires=[
         'numpy',
         'opencv-python',
         'pyzbar',
-        'qrdet>=2.0',
+        'qrdet>=2.1',
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
