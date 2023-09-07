@@ -89,14 +89,14 @@ This method detects the **QR** codes in the image and return a tuple of dictiona
 | Key                        | Value Desc.                        | Value Type          | Example                               |
 |----------------------------|------------------------------------|---------------------|---------------------------------------|
 | `confidence`               | Detection confidence               | float               | 0.95                                  |
-| `bbox_xyxy`                | Bounding box `[x1, y1, x2, y2]`    | np.ndarray          | `[30.4, 40.3, 50.1, 60.2]`                    |
-| `cxcy`                     | Center of bounding box `(x, y)`    | tuple[float, float] | `(40.0, 50.2)`                            |
-| `wh`                       | Width and height `(w, h)`          | tuple[float, float] | `(20.1, 30.6)`                            |
-| `polygon_xy`               | Polygon around QR code             | np.ndarray (N, 2)   | `[[10., 20.], [30., 40.], ...]`           |
-| `quadrilateral_xy`         | Quadrilateral around QR code       | np.ndarray (4, 2)   | `[[10., 20.], [30., 40.], [50., 60.], [70., 80.]]` |
-| `expanded_quadrilateral_xy`| Expanded quadrilateral             | np.ndarray (4, 2)   | `[[5., 15.], [25., 35.], [45., 55.], [65., 75.]]` |
+| `bbox_xyxy`                | Bounding box    | np.ndarray          | `[x1, y1, x2, y2]`                    |
+| `cxcy`                     | Center of bounding box    | tuple[float, float] | `(x, y)`                            |
+| `wh`                       | Bbox Width and height          | tuple[float, float] | `(w, h)`                            |
+| `polygon_xy`               | Polygon that segments the QR         | np.ndarray (N, 2)   | `[[x1, y1], [x2, y2], ...]`           |
+| `quadrilateral_xy`         | Denoising 4 corners fitting of `polygon_xy`        | np.ndarray (4, 2)   | `[[x1, y1], [x2, y2], [x3, y3], [x4, y4]]` |
+| `expanded_quadrilateral_xy`| Expanded version of quadrilateral_xy that includes all points within `polygon_xy`        | np.ndarray (4, 2)   | `[[x1, y1], [x2, y2], [x3, y3], [x4, y4]]` |
 
-> **NOTE:** All keys except `confidence` have a normalized ('n') version, which scales the values between 0 and 1. For example, `bbox_xyxyn` would represent the bounding box in normalized coordinates.
+> **NOTE:** All keys except `confidence` have a normalized ('n') version, which scales the values between 0. and 1.. For example, `bbox_xyxyn` would represent the bounding box in normalized coordinates.
 
 
 **NOTE**: This the only function you will need? Take a look at <a href="https://github.com/Eric-Canas/qrdet" target="_blank">QRDet</a>.
