@@ -53,7 +53,7 @@ decoded_text = qreader.detect_and_decode(image=image)
 
 ``detect_and_decode`` will return a `tuple` containing the decoded _string_ of every **QR** found in the image. 
 
- **NOTE**: Some entries can be `None`, it will happen when a **QR** have been detected but **couldn't be decoded**.
+> **NOTE**: Some entries can be `None`, it will happen when a **QR** have been detected but **couldn't be decoded**.
 
 
 ## API Reference
