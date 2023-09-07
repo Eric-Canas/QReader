@@ -93,10 +93,10 @@ This method detects the **QR** codes in the image and return a tuple of dictiona
 | `cxcy`                     | Center of bounding box    | tuple[float, float] | `(x, y)`                            |
 | `wh`                       | Bbox Width and height          | tuple[float, float] | `(w, h)`                            |
 | `polygon_xy`               | Polygon that segments the QR         | np.ndarray (N, 2)   | `[[x1, y1], [x2, y2], ...]`           |
-| `quadrilateral_xy`         | Denoising 4 corners fitting of `polygon_xy`        | np.ndarray (4, 2)   | `[[x1, y1], [x2, y2], [x3, y3], [x4, y4]]` |
-| `expanded_quadrilateral_xy`| Expanded version of quadrilateral_xy that includes all points within `polygon_xy`        | np.ndarray (4, 2)   | `[[x1, y1], [x2, y2], [x3, y3], [x4, y4]]` |
+| `quadrilateral_xy`         | Denoised four corners fitting of `polygon_xy`        | np.ndarray (4, 2)   | `[[x1, y1], [x2, y2], [x3, y3], [x4, y4]]` |
+| `expanded_quadrilateral_xy`| Expanded version of `quadrilateral_xy` that includes all points within `polygon_xy`        | np.ndarray (4, 2)   | `[[x1, y1], [x2, y2], [x3, y3], [x4, y4]]` |
 
-> **NOTE:** All keys except `confidence` have a normalized ('n') version, which scales the values between 0. and 1.. For example, `bbox_xyxyn` would represent the bounding box in normalized coordinates.
+> **NOTE:** All keys (except `confidence`) have a normalized ('n') version. For example,`bbox_xyxy` represents the bbox of the QR in image coordinates [[0., im_w], [0., im_h]], while `bbox_xyxyn` contains the same bounding box in normalized coordinates [0., 1.].
 
 
 **NOTE**: This the only function you will need? Take a look at <a href="https://github.com/Eric-Canas/qrdet" target="_blank">QRDet</a>.
