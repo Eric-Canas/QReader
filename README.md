@@ -113,7 +113,7 @@ This method decodes a single **QR** code on the given image, described by a dete
 Internally, this method will run the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> decoder, using the information of the `detection_result`, to apply different image preprocessing techniques that heavily increase the detecoding rate.
 
 - ``image``: **np.ndarray**. NumPy Array with the ``image`` that contains the _QR_ to decode. The image is expected to be in ``uint8`` format [_HxWxC_], RGB.
-- ``detection_result``: dict[str, np.ndarray|float|tuple[float|int, float|int]]. One of the **detection dicts** returned by the **detect** method. Note that [QReader.detect()](QReader_detect) returns a `tuple` of these `dict`. This method expects just one of them.
+- ``detection_result``: dict[str, np.ndarray|float|tuple[float|int, float|int]]. One of the **detection dicts** returned by the **detect** method. Note that [QReader.detect()](#QReader_detect) returns a `tuple` of these `dict`. This method expects just one of them.
 
 
 - Returns: **str | None**. The decoded content of the _QR_ code or `None` if it couldn't be read.
