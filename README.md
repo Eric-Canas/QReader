@@ -77,9 +77,10 @@ This method will decode the **QR** codes in the given image and return the decod
 
 - **Returns**: **tuple[str | None] | tuple[tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]]], str | None]]**: A tuple with all detected **QR** codes decodified. If ``return_detections`` is `False`, the output will look like: `('Decoded QR 1', 'Decoded QR 2', None, 'Decoded QR 4', ...)`. If ``return_detections`` is `True` it will look like: `(('Decoded QR 1', {'bbox_xyxy': (x1_1, y1_1, x2_1, y2_1), 'confidence': conf_1}), ('Decoded QR 2', {'bbox_xyxy': (x1_2, y1_2, x2_2, y2_2), 'confidence': conf_2, ...}), ...)`. Look QReader.detect() for more information about detections format.
 
+<a name="QReader_detect"></a>
 ### QReader.detect(image)
 
-This method detects the **QR** codes in the image and return a tuple of dictionaries with all the detection information.
+This method detects the **QR** codes in the image and returns a _tuple of dictionaries_ with all the detection information.
 
 - ``image``: **np.ndarray**. The image to be read. It is expected to be _RGB_ or _BGR_ (_uint8_). Format (_HxWx3_).
 - ``is_bgr``: **boolean**. If `True`, the received image is expected to be _BGR_ instead of _RGB_.
@@ -112,7 +113,7 @@ This method decodes a single **QR** code on the given image, described by a dete
 Internally, this method will run the <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> decoder, using the information of the `detection_result`, to apply different image preprocessing techniques that heavily increase the detecoding rate.
 
 - ``image``: **np.ndarray**. NumPy Array with the ``image`` that contains the _QR_ to decode. The image is expected to be in ``uint8`` format [_HxWxC_], RGB.
-- ``detection_result``: dict[str, np.ndarray|float|tuple[float|int, float|int]]. One of the **detection dicts** returned by the **detect** method. Note that **QReader.detect()** returns a `tuple` of these `dict`. This method expects just one of them.
+- ``detection_result``: dict[str, np.ndarray|float|tuple[float|int, float|int]]. One of the **detection dicts** returned by the **detect** method. Note that [QReader.detect()](QReader_detect) returns a `tuple` of these `dict`. This method expects just one of them.
 
 
 - Returns: **str | None**. The decoded content of the _QR_ code or `None` if it couldn't be read.
