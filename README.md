@@ -157,12 +157,12 @@ Image: test_mobile.jpeg -> QReader: ('https://github.com/Eric-Canas/QReader'). O
 Image: test_draw_64x64.jpeg -> QReader: ('https://github.com/Eric-Canas/QReader'). OpenCV: . pyzbar: ().
 ```
 
-Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder**. The improved **detection-decoding rate** that **QReader** achieves comes from the combination of different image pre-processing techniques and the <a href="https://github.com/WongKinYiu/yolov7" target="_blank">YOLOv7</a> based <a href="https://github.com/Eric-Canas/qrdet" target="_blank">**QR** detector</a> that is able to detect **QR** codes in harder conditions than classical _Computer Vision_ methods.
+Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder**. The improved **detection-decoding rate** that **QReader** achieves comes from the combination of different image pre-processing techniques and the <a href="https://github.com/ultralytics/ultralytics" target="_blank">YOLOv8</a> based <a href="https://github.com/Eric-Canas/qrdet" target="_blank">**QR** detector</a> that is able to detect **QR** codes in harder conditions than classical _Computer Vision_ methods.
 
 ## Acknowledgements
 
 This library is based on the following projects:
 
-- <a href="https://github.com/WongKinYiu/yolov7" target="_blank">YoloV7</a> model for **Object Detection**.
+- <a href="https://github.com/ultralytics/ultralytics" target="_blank">YoloV8</a> model for **Object Detection & Segmentation**.
 - <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> **QR** Decoder.
 - <a href="https://opencv.org/" target="_blank">OpenCV</a> methods for image filtering.
