@@ -100,6 +100,7 @@ This method detects the **QR** codes in the image and return a tuple of dictiona
 > **NOTE:**
 > - All `np.ndarray` values are of type `np.float32` 
 > - All keys (except `confidence` and `image_shape`) have a normalized ('n') version. For example,`bbox_xyxy` represents the bbox of the QR in image coordinates [[0., im_w], [0., im_h]], while `bbox_xyxyn` contains the same bounding box in normalized coordinates [0., 1.].
+> - `bbox_xyxy[n]` and `polygon_xy[n]` are clipped to `image_shape`. You can use them for indexing without further management
 
 
 **NOTE**: This the only function you will need? Take a look at <a href="https://github.com/Eric-Canas/qrdet" target="_blank">QRDet</a>.
