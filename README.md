@@ -86,17 +86,20 @@ This method detects the **QR** codes in the image and return a tuple of dictiona
 
 - **Returns**: **tuple[dict[str, np.ndarray|float|tuple[float|int, float|int]]]**. A tuple of dictionaries containing all the information of every detection. Contains the following keys.
 
-| Key                        | Value Desc.                        | Value Type          | Example                               |
-|----------------------------|------------------------------------|---------------------|---------------------------------------|
-| `confidence`               | Detection confidence               | float               | 0.95                                  |
-| `bbox_xyxy`                | Bounding box    | np.ndarray          | `[x1, y1, x2, y2]`                    |
-| `cxcy`                     | Center of bounding box    | tuple[float, float] | `(x, y)`                            |
-| `wh`                       | Bbox Width and height          | tuple[float, float] | `(w, h)`                            |
-| `polygon_xy`               | Polygon that segments the QR         | np.ndarray (N, 2)   | `[[x1, y1], [x2, y2], ...]`           |
-| `quadrilateral_xy`         | Denoised four corners fitting of `polygon_xy`        | np.ndarray (4, 2)   | `[[x1, y1], [x2, y2], [x3, y3], [x4, y4]]` |
-| `expanded_quadrilateral_xy`| Version of `quadrilateral_xy` that includes all points within `polygon_xy`        | np.ndarray (4, 2)   | `[[x1, y1], [x2, y2], [x3, y3], [x4, y4]]` |
+| Key              | Value Desc.                                 | Value Type                 | Value Form                  |
+|------------------|---------------------------------------------|----------------------------|-----------------------------|
+| `confidence`     | Detection confidence                        | `float`                    | `conf.`                     |
+| `bbox_xyxy`      | Bounding box                                | np.ndarray (**4**)         | `[x1, y1, x2, y2]`          |
+| `cxcy`           | Center of bounding box                      | tuple[`float`, `float`]    | `(x, y)`                    |
+| `wh`             | Bounding box width and height               | tuple[`float`, `float`]    | `(w, h)`                    |
+| `polygon_xy`     | Precise polygon that segments the _QR_      | np.ndarray (**N**, **2**)  | `[[x1, y1], [x2, y2], ...]` |
+| `quad_xy`        | Four corners polygon that segments the _QR_ | np.ndarray (**4**, **2**)  | `[[x1, y1], ..., [x4, y4]]` |
+| `padded_quad_xy` |`quad_xy` padded to fully cover `polygon_xy` | np.ndarray (**4**, **2**)  | `[[x1, y1], ..., [x4, y4]]` |
+| `image_shape`    | Shape of the input image                    | tuple[`float`, `float`]    | `(h, w)`                    |  
 
-> **NOTE:** All keys (except `confidence`) have a normalized ('n') version. For example,`bbox_xyxy` represents the bbox of the QR in image coordinates [[0., im_w], [0., im_h]], while `bbox_xyxyn` contains the same bounding box in normalized coordinates [0., 1.].
+> **NOTE:**
+> - All `np.ndarray` values are of type `np.float32` 
+> - All keys (except `confidence` and `image_shape`) have a normalized ('n') version. For example,`bbox_xyxy` represents the bbox of the QR in image coordinates [[0., im_w], [0., im_h]], while `bbox_xyxyn` contains the same bounding box in normalized coordinates [0., 1.].
 
 
 **NOTE**: This the only function you will need? Take a look at <a href="https://github.com/Eric-Canas/qrdet" target="_blank">QRDet</a>.
