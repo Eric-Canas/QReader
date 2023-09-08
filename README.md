@@ -163,7 +163,7 @@ Note that **QReader** internally uses <a href="https://github.com/NaturalHistory
 
 ### Rotation Test
 <div>
-<img alt="Rotation Test" title="Rotation Test" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/benchmark/rotation_benchmark.gif" width="30%" align="left">
+<img alt="Rotation Test" title="Rotation Test" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/benchmark/rotation_benchmark.gif" width="40%" align="left">
 
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
 <div align="center">
