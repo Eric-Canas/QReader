@@ -163,14 +163,20 @@ Note that **QReader** internally uses <a href="https://github.com/NaturalHistory
 
 ### Rotation Test
 <div>
-<img alt="Rotation Test" title="Rotation Test" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/benchmark/rotation_benchmark.gif" width="50%">
+<img alt="Rotation Test" title="Rotation Test" src="https://raw.githubusercontent.com/Eric-Canas/QReader/main/documentation/benchmark/rotation_benchmark.gif" width="30%" align="left">
+
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+<div align="center">
+  
 | Method  | Max Rotation Degrees  |
-|:-------:|:---------------------:|
+|---------|-----------------------|
 | Pyzbar  | 17º                   |
 | OpenCV  | 46º                   |
 | QReader | 79º                   |
+  
 </div>
-
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+</div>
 
 ## Acknowledgements
 
