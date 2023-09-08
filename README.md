@@ -78,7 +78,7 @@ This method will decode the **QR** codes in the given image and return the decod
   
 - **Returns**: **tuple[str | None] | tuple[tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]]], str | None]]**: A tuple with all detected **QR** codes decodified. If ``return_detections`` is `False`, the output will look like: `('Decoded QR 1', 'Decoded QR 2', None, 'Decoded QR 4', ...)`. If ``return_detections`` is `True` it will look like: `(('Decoded QR 1', {'bbox_xyxy': (x1_1, y1_1, x2_1, y2_1), 'confidence': conf_1}), ('Decoded QR 2', {'bbox_xyxy': (x1_2, y1_2, x2_2, y2_2), 'confidence': conf_2, ...}), ...)`. Look [QReader.detect()](#QReader_detect_table) for more information about detections format.
 
-<a name="QReader_detect"/>
+<a name="QReader_detect"></a>
 
 ### QReader.detect(image)
 
@@ -86,7 +86,7 @@ This method detects the **QR** codes in the image and returns a _tuple of dictio
 
 - ``image``: **np.ndarray**. The image to be read. It is expected to be _RGB_ or _BGR_ (_uint8_). Format (_HxWx3_).
 - ``is_bgr``: **boolean**. If `True`, the received image is expected to be _BGR_ instead of _RGB_.
-<a name="QReader_detect_table"/>
+<a name="QReader_detect_table"></a>
 
 - **Returns**: **tuple[dict[str, np.ndarray|float|tuple[float|int, float|int]]]**. A tuple of dictionaries containing all the information of every detection. Contains the following keys.
 
