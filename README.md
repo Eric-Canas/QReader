@@ -175,13 +175,4 @@ Note that **QReader** internally uses <a href="https://github.com/NaturalHistory
 | QReader | 79º                   |
   
 </div>
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; 
 </div>
-
-## Acknowledgements
-
-This library is based on the following projects:
-
-- <a href="https://github.com/ultralytics/ultralytics" target="_blank">YoloV8</a> model for **Object Detection & Segmentation**.
-- <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">Pyzbar</a> **QR** Decoder.
-- <a href="https://opencv.org/" target="_blank">OpenCV</a> methods for image filtering.
