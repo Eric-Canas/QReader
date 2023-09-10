@@ -15,7 +15,7 @@ import numpy as np
 from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol, Decoded
 import cv2
 
-from qrdet import QRDetector, crop_qr, PADDED_QUAD_XY
+from qrdet import QRDetector, crop_qr, PADDED_QUAD_XY, BBOX_XYXY
 
 _SHARPEN_KERNEL = np.array(((-1., -1., -1.), (-1., 9., -1.), (-1., -1., -1.)), dtype=np.float32)
 
@@ -104,19 +104,26 @@ class QReader:
         :return: tuple. The decoded QR code in the zbar format.
         """
         # Try to just decode the QR code
-        cropped_bbox, _ = crop_qr(image=image, detection=detection_result, crop_key=PADDED_QUAD_XY)
-        decodedQR = decodeQR(image=cropped_bbox, symbols=[ZBarSymbol.QRCODE])
+        decodedQR = decodeQR(image=image, symbols=[ZBarSymbol.QRCODE])
         if len(decodedQR) > 0:
             return decodedQR
-        # Crop the QR for the quad
+
+        # Crop the QR for bbox and quad
+        cropped_bbox, _ = crop_qr(image=image, detection=detection_result, crop_key=BBOX_XYXY)
         cropped_quad, updated_detection = crop_qr(image=image, detection=detection_result, crop_key=PADDED_QUAD_XY)
-        image = self.__correct_perspective(image=cropped_quad, padded_quad_xy=updated_detection[PADDED_QUAD_XY])
+        corrected_perspective = self.__correct_perspective(image=cropped_quad, padded_quad_xy=updated_detection[PADDED_QUAD_XY])
 
         for scale_factor in (1, 0.5, 2, 0.25):
             # If rescaled_image will be larger than 1024px, skip it
-            if any(axis > 1024 for axis in image.shape[:2]) and scale_factor != 1:
+            if not all(25 < axis < 1024 for axis in corrected_perspective.shape[:2]) and scale_factor != 1:
                 continue
-            rescaled_image = cv2.resize(src=image, dsize=None, fx=scale_factor, fy=scale_factor,
+            rescaled_bbox_image = cv2.resize(src=cropped_bbox, dsize=None, fx=scale_factor, fy=scale_factor,
+                                        interpolation=cv2.INTER_CUBIC)
+            decodedQR = decodeQR(image=rescaled_bbox_image, symbols=[ZBarSymbol.QRCODE])
+            if len(decodedQR) > 0:
+                return decodedQR
+
+            rescaled_image = cv2.resize(src=corrected_perspective, dsize=None, fx=scale_factor, fy=scale_factor,
                                         interpolation=cv2.INTER_CUBIC)
             decodedQR = decodeQR(image=rescaled_image, symbols=[ZBarSymbol.QRCODE])
             if len(decodedQR) > 0:
@@ -124,7 +131,7 @@ class QReader:
 
             # If it not works, try to parse to grayscale (if it is not already)
             if len(rescaled_image.shape) == 3:
-                assert rescaled_image.shape[2] == 3, f'Image must be RGB or BGR, but it has {image.shape[2]} channels.'
+                assert rescaled_image.shape[2] == 3, f'Image must be RGB or BGR, but it has {corrected_perspective.shape[2]} channels.'
                 gray = cv2.cvtColor(rescaled_image, cv2.COLOR_RGB2GRAY)
             else:
                 gray = rescaled_image
