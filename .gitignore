@@ -4,3 +4,4 @@ Private Instructions.md
 dist/
 qreader.egg-info/
 __pycache__/
+testset/

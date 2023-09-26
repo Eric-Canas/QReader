@@ -104,19 +104,16 @@ class QReader:
             expects just one of them.
         :return: tuple. The decoded QR code in the zbar format.
         """
-        # Try to just decode the QR code
-        decodedQR = decodeQR(image=image, symbols=[ZBarSymbol.QRCODE])
-        if len(decodedQR) > 0:
-            return decodedQR
         # Crop the QR for bbox and quad
         cropped_bbox, _ = crop_qr(image=image, detection=detection_result, crop_key=BBOX_XYXY)
         cropped_quad, updated_detection = crop_qr(image=image, detection=detection_result, crop_key=PADDED_QUAD_XY)
         corrected_perspective = self.__correct_perspective(image=cropped_quad,
                                                            padded_quad_xy=updated_detection[PADDED_QUAD_XY])
 
-        for scale_factor in (1, 0.5, 2, 0.25):
+        for scale_factor in (1, 0.5, 2, 0.25, 3, 4):
             for image in (cropped_bbox, corrected_perspective):
                 # If rescaled_image will be larger than 1024px, skip it
+                # TODO: Decide a minimum size for the QRs based on the resize benchmark
                 if not all(25 < axis < 1024 for axis in image.shape[:2]) and scale_factor != 1:
                     continue
 
@@ -241,7 +238,7 @@ class QReader:
                     a tuple of strings with the decoded QR codes (or None if it can not be decoded).
 
         """
-        detections = self.detect(image=image)
+        detections = self.detect(image=image, is_bgr=is_bgr)
         decoded_qrs = tuple(self.decode(image=image, detection_result=detection) for detection in detections)
 
 
