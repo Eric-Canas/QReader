@@ -11,7 +11,7 @@ images = [os.path.join(os.path.dirname(__file__), 'testset', filename)
 
 if __name__ == '__main__':
     # Initialize QReader
-    detector = QReader(reencode_to='utf-8')
+    detector = QReader(model_size='n')
     # For each image, show the results
     for image_file in images:
         # Read the images
