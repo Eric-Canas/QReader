@@ -6,10 +6,23 @@ import os
 
 SAMPLE_IMG = os.path.join(os.path.dirname(__file__), 'documentation', 'resources', 'test_draw_64x64.jpeg')
 
-images = [os.path.join(os.path.dirname(__file__), 'testset', filename)
-          for filename in os.listdir(os.path.join(os.path.dirname(__file__), 'testset'))]
+def utf_errors_test():
+    import qrcode
+    qreader = QReader(model_size='n')
+    image_path = "my_image.png"
+    data = 'â'
+    print(f'data = {data}')
+    img = qrcode.make(data)
 
-if __name__ == '__main__':
+    img.save(image_path)
+    img = cv2.imread(image_path)
+    os.remove(image_path)
+    result = qreader.detect_and_decode(image=img)
+    print(f"result = {result[0]}")
+
+def decode_test_set():
+    images = [os.path.join(os.path.dirname(__file__), 'testset', filename)
+              for filename in os.listdir(os.path.join(os.path.dirname(__file__), 'testset'))]
     # Initialize QReader
     detector = QReader(model_size='n')
     # For each image, show the results
@@ -26,3 +39,7 @@ if __name__ == '__main__':
                 pass
                 #decoded_qrs = detector.detect_and_decode(image=img, return_detections=False)
         print('-------------------')
+
+if __name__ == '__main__':
+    utf_errors_test()
+    #decode_test_set()

@@ -14,13 +14,18 @@ from warnings import warn
 import numpy as np
 from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol, Decoded
 import cv2
+import os
 
 from qrdet import QRDetector, crop_qr, PADDED_QUAD_XY, BBOX_XYXY, CONFIDENCE, CXCY, WH, POLYGON_XY, QUAD_XY
 
 _SHARPEN_KERNEL = np.array(((-1., -1., -1.), (-1., 9., -1.), (-1., -1., -1.)), dtype=np.float32)
 
+# In windows shift-jis is the default encoding will use, while in linux is big5
+DEFAULT_REENCODINGS = ('shift-jis', 'big5') if os.name == 'nt' else ('big5', 'shift-jis')
+
 class QReader:
-    def __init__(self, model_size: str = 's', min_confidence: float = 0.5, reencode_to: str | None = 'shift-jis'):
+    def __init__(self, model_size: str = 's', min_confidence: float = 0.5,
+                 reencode_to: str | tuple[str] | list[str] | None = DEFAULT_REENCODINGS):
         """
         This class implements a robust, ML Based QR detector & decoder.
 
@@ -36,7 +41,16 @@ class QReader:
             - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
         """
         self.detector = QRDetector(model_size=model_size, conf_th=min_confidence)
-        self.reencode_to = reencode_to
+
+        if isinstance(reencode_to, str):
+            self.reencode_to = (reencode_to,) if reencode_to != 'utf-8' else ()
+        elif reencode_to is None:
+            self.reencode_to = ()
+        else:
+            assert isinstance(reencode_to, (tuple, list)), \
+                f"reencode_to must be a str, tuple, list or None. Got {type(reencode_to)}"
+            self.reencode_to = reencode_to
+
 
     def detect(self, image: np.ndarray, is_bgr: bool = False) -> tuple[dict[str, np.ndarray|float|tuple[float|int, float|int]]]:
         """
@@ -83,12 +97,17 @@ class QReader:
         decodedQR = self._decode_qr_zbar(image=image, detection_result=detection_result)
         if len(decodedQR) > 0:
             decoded_str = decodedQR[0].data.decode('utf-8')
-            if self.reencode_to is not None and self.reencode_to != 'utf-8':
+            for encoding in self.reencode_to:
                 try:
-                    decoded_str = decoded_str.encode(self.reencode_to).decode('utf-8')
+                    decoded_str = decoded_str.encode(encoding).decode('utf-8')
+                    break
                 except (UnicodeDecodeError, UnicodeEncodeError):
+                    pass
+            else:
+                if len(self.reencode_to) > 0:
                     # When double decoding fails, just return the first decoded string with utf-8
                     warn(f'Double decoding failed for {self.reencode_to}. Returning utf-8 decoded string.')
+
             return decoded_str
         return None
 
