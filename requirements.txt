@@ -1,4 +1,4 @@
 opencv-python
 numpy
 pyzbar
-qrdet>=2.4
+git+https://github.com/viaPhoton/qrdet.git@v2.4.1#egg=qrdet

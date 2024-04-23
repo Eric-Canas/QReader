@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='qreader',
-    version='3.12',
+    version='3.12.1',
     packages=find_namespace_packages(),
     # expose qreader.py as the unique module
     py_modules=['qreader'],
@@ -18,7 +18,7 @@ setup(
         'numpy',
         'opencv-python',
         'pyzbar',
-        'qrdet>=2.1',
+        'qrdet>=2.4',
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
