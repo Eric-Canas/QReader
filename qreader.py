@@ -24,7 +24,7 @@ _SHARPEN_KERNEL = np.array(((-1., -1., -1.), (-1., 9., -1.), (-1., -1., -1.)), d
 DEFAULT_REENCODINGS = ('shift-jis', 'big5') if os.name == 'nt' else ('big5', 'shift-jis')
 
 class QReader:
-    def __init__(self, model_zoo: str = None, min_confidence: float = 0.5,
+    def __init__(self, model_type: str = 'onnx', min_confidence: float = 0.5,
                  reencode_to: str | tuple[str] | list[str] | None = DEFAULT_REENCODINGS):
         """
         This class implements a robust, ML Based QR detector & decoder.
@@ -40,7 +40,7 @@ class QReader:
             - 'shift-jis' for Germanic languages
             - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
         """
-        self.detector = QRDetector(model_zoo=model_zoo, conf_th=min_confidence)
+        self.detector = QRDetector(model_type=model_type, conf_th=min_confidence)
 
         if isinstance(reencode_to, str):
             self.reencode_to = (reencode_to,) if reencode_to != 'utf-8' else ()
