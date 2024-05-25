@@ -126,7 +126,9 @@ class QReader:
         # Crop the image if a bounding box is given
         decodedQR = self._decode_qr_zbar(image=image, detection_result=detection_result)
         if len(decodedQR) > 0:
-            decoded_str = decodedQR[0].data.decode('utf-8')
+            # Take first result only
+            decodeQRResult = decodedQR[0]
+            decoded_str = decodeQRResult.result.data.decode('utf-8')
             for encoding in self.reencode_to:
                 try:
                     decoded_str = decoded_str.encode(encoding).decode('utf-8')
@@ -204,7 +206,7 @@ class QReader:
 
     def _decode_qr_zbar(self, image: np.ndarray,
                         detection_result: dict[str, np.ndarray | float | tuple[float | int, float | int]]) -> list[
-        Decoded]:
+        DecodeQRResult]:
         """
         Try to decode the QR code just with pyzbar, pre-processing the image if it fails in different ways that
         sometimes work.
