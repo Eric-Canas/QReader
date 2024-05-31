@@ -13,8 +13,10 @@ from __future__ import annotations
 from warnings import warn
 import numpy as np
 from pyzbar.pyzbar import decode as decodeQR, ZBarSymbol, Decoded
+from dataclasses import dataclass
 import cv2
 import os
+import typing
 
 from qrdet import QRDetector, crop_qr, PADDED_QUAD_XY, BBOX_XYXY, CONFIDENCE, CXCY, WH, POLYGON_XY, QUAD_XY
 
@@ -22,6 +24,34 @@ _SHARPEN_KERNEL = np.array(((-1., -1., -1.), (-1., 9., -1.), (-1., -1., -1.)), d
 
 # In windows shift-jis is the default encoding will use, while in linux is big5
 DEFAULT_REENCODINGS = ('shift-jis', 'big5') if os.name == 'nt' else ('big5', 'shift-jis')
+
+@dataclass(frozen=True)
+class DecodeQRResult():
+    scale_factor: float
+    corrections: typing.Literal["cropped_bbox", "corrected_perspective"]
+    flavor: typing.Literal["original", "inverted", "grayscale"]
+    blur_kernel_sizes: tuple[tuple[int, int]] | None
+    image: np.ndarray
+    result: Decoded
+
+def wrap(
+    scale_factor: float, 
+    corrections: str, 
+    flavor: str, 
+    blur_kernel_sizes: tuple[tuple[int, int]], 
+    image: np.ndarray, 
+    results: typing.List[Decoded],
+) -> list[DecodeQRResult]:
+    
+    return [DecodeQRResult(
+        scale_factor=scale_factor,
+        corrections=corrections,
+        flavor=flavor,
+        blur_kernel_sizes=blur_kernel_sizes,
+        image=image,
+        result=result,
+        ) for result in results]
+
 
 class QReader:
     def __init__(self, model_size: str = 's', min_confidence: float = 0.5,
@@ -96,7 +126,9 @@ class QReader:
         # Crop the image if a bounding box is given
         decodedQR = self._decode_qr_zbar(image=image, detection_result=detection_result)
         if len(decodedQR) > 0:
-            decoded_str = decodedQR[0].data.decode('utf-8')
+            # Take first result only
+            decodeQRResult = decodedQR[0]
+            decoded_str = decodeQRResult.result.data.decode('utf-8')
             for encoding in self.reencode_to:
                 try:
                     decoded_str = decoded_str.encode(encoding).decode('utf-8')
@@ -174,7 +206,7 @@ class QReader:
 
     def _decode_qr_zbar(self, image: np.ndarray,
                         detection_result: dict[str, np.ndarray | float | tuple[float | int, float | int]]) -> list[
-        Decoded]:
+        DecodeQRResult]:
         """
         Try to decode the QR code just with pyzbar, pre-processing the image if it fails in different ways that
         sometimes work.
@@ -191,7 +223,7 @@ class QReader:
                                                            padded_quad_xy=updated_detection[PADDED_QUAD_XY])
 
         for scale_factor in (1, 0.5, 2, 0.25, 3, 4):
-            for image in (cropped_bbox, corrected_perspective):
+            for label, image in {"cropped_bbox": cropped_bbox, "corrected_perspective": corrected_perspective}.items():
                 # If rescaled_image will be larger than 1024px, skip it
                 # TODO: Decide a minimum size for the QRs based on the resize benchmark
                 if not all(25 < axis < 1024 for axis in image.shape[:2]) and scale_factor != 1:
@@ -201,11 +233,26 @@ class QReader:
                                             interpolation=cv2.INTER_CUBIC)
                 decodedQR = decodeQR(image=rescaled_image, symbols=[ZBarSymbol.QRCODE])
                 if len(decodedQR) > 0:
-                    return decodedQR
+                    return wrap(
+                        scale_factor=scale_factor,
+                        corrections=label,
+                        flavor="original",
+                        blur_kernel_sizes=None,
+                        image=rescaled_image,
+                        results=decodedQR
+                    )
                 # For QRs with black background and white foreground, try to invert the image
-                decodedQR = decodeQR(image=255 - rescaled_image, symbols=[ZBarSymbol.QRCODE])
+                inverted_image = image=255 - rescaled_image
+                decodedQR = decodeQR(inverted_image, symbols=[ZBarSymbol.QRCODE])
                 if len(decodedQR) > 0:
-                    return decodedQR
+                    return wrap(
+                        scale_factor=scale_factor,
+                        corrections=label,
+                        flavor="inverted",
+                        blur_kernel_sizes=None,
+                        image=inverted_image,
+                        results=decodedQR,
+                    )
 
                 # If it not works, try to parse to grayscale (if it is not already)
                 if len(rescaled_image.shape) == 3:
@@ -216,7 +263,14 @@ class QReader:
                     gray = rescaled_image
                 decodedQR = self.__threshold_and_blur_decodings(image=gray, blur_kernel_sizes=((5, 5), (7, 7)))
                 if len(decodedQR) > 0:
-                    return decodedQR
+                    return wrap(
+                        scale_factor=scale_factor,
+                        corrections=label,
+                        flavor="grayscale",
+                        blur_kernel_sizes=((5, 5), (7, 7)),
+                        image=gray,
+                        results=decodedQR
+                    )
 
                 if len(rescaled_image.shape) == 3:
                     # If it not works, try to sharpen the image
@@ -226,7 +280,14 @@ class QReader:
                     sharpened_gray = cv2.filter2D(src=rescaled_image, ddepth=-1, kernel=_SHARPEN_KERNEL)
                 decodedQR = self.__threshold_and_blur_decodings(image=sharpened_gray, blur_kernel_sizes=((3, 3),))
                 if len(decodedQR) > 0:
-                    return decodedQR
+                    return wrap(
+                        scale_factor=scale_factor,
+                        corrections=label,
+                        flavor="grayscale",
+                        blur_kernel_sizes=((3, 3),),
+                        image=sharpened_gray,
+                        results=decodedQR
+                    )
 
         return []
 
