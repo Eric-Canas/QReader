@@ -54,9 +54,9 @@ class DecodeQRResult:
 
 def wrap(
     scale_factor: float,
-    corrections: str,
-    flavor: str,
-    blur_kernel_sizes: tuple[tuple[int, int]],
+    corrections: typing.Literal["cropped_bbox", "corrected_perspective"],
+    flavor: typing.Literal["original", "inverted", "grayscale"],
+    blur_kernel_sizes: tuple[tuple[int, int], ...] | None,
     image: np.ndarray,
     results: typing.List[Decoded],
 ) -> list[DecodeQRResult]:
