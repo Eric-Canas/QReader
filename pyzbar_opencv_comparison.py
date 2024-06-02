@@ -1,16 +1,20 @@
 import os
 
-from qreader import QReader
 import cv2
 from pyzbar.pyzbar import decode
 
-SAMPLE_IMG_1 = os.path.join(os.path.dirname(__file__), 'documentation', 'resources', 'test_draw_64x64.jpeg')
-SAMPLE_IMG_2 = os.path.join(os.path.dirname(__file__), 'documentation', 'resources', '64x64.png')
+from qreader import QReader
 
-if __name__ == '__main__':
+SAMPLE_IMG_1 = os.path.join(
+    os.path.dirname(__file__), "documentation", "resources", "test_draw_64x64.jpeg"
+)
+SAMPLE_IMG_2 = os.path.join(
+    os.path.dirname(__file__), "documentation", "resources", "64x64.png"
+)
+
+if __name__ == "__main__":
     # Initialize the three tested readers (QRReader, OpenCV and pyzbar)
     qreader_reader, cv2_reader, pyzbar_reader = QReader(), cv2.QRCodeDetector(), decode
-
 
     for img_path in (SAMPLE_IMG_1, SAMPLE_IMG_2):
         # Read the image
@@ -21,7 +25,12 @@ if __name__ == '__main__':
         cv2_out = cv2_reader.detectAndDecode(img=img)[0]
         pyzbar_out = pyzbar_reader(image=img)
         # Read the content of the pyzbar output (double decoding trick is needed to solve possible encoding issues)
-        pyzbar_out = tuple(out.data.data.decode('utf-8').encode('shift-jis').decode('utf-8') for out in pyzbar_out)
+        pyzbar_out = tuple(
+            out.data.data.decode("utf-8").encode("shift-jis").decode("utf-8")
+            for out in pyzbar_out
+        )
 
         # Print the results
-        print(f"Image: {img_path} -> QReader: {qreader_out}. OpenCV: {cv2_out}. pyzbar: {pyzbar_out}.")
+        print(
+            f"Image: {img_path} -> QReader: {qreader_out}. OpenCV: {cv2_out}. pyzbar: {pyzbar_out}."
+        )
