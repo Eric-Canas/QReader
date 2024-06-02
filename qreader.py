@@ -20,17 +20,8 @@ import cv2
 import numpy as np
 from pyzbar.pyzbar import Decoded, ZBarSymbol
 from pyzbar.pyzbar import decode as decodeQR
-from qrdet import (
-    BBOX_XYXY,
-    CONFIDENCE,
-    CXCY,
-    PADDED_QUAD_XY,
-    POLYGON_XY,
-    QUAD_XY,
-    WH,
-    QRDetector,
-    crop_qr,
-)
+from qrdet import (BBOX_XYXY, CONFIDENCE, CXCY, PADDED_QUAD_XY, POLYGON_XY,
+                   QUAD_XY, WH, QRDetector, crop_qr)
 
 _SHARPEN_KERNEL = np.array(
     ((-1.0, -1.0, -1.0), (-1.0, 9.0, -1.0), (-1.0, -1.0, -1.0)), dtype=np.float32
