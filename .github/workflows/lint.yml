@@ -40,4 +40,4 @@ jobs:
           pip install black isort
       - name: Run isort
         run: |-
-          isort --check-only .
+          isort --check-only --profile black .
