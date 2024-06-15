@@ -2,7 +2,7 @@ from setuptools import find_namespace_packages, setup
 
 setup(
     name="qreader",
-    version="3.13",
+    version="3.14",
     packages=find_namespace_packages(),
     # expose qreader.py as the unique module
     py_modules=["qreader"],
