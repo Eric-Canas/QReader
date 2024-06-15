@@ -80,6 +80,7 @@ class QReader:
         model_size: str = "s",
         min_confidence: float = 0.5,
         reencode_to: str | tuple[str] | list[str] | None = DEFAULT_REENCODINGS,
+        weights_folder: str | None = None,
     ):
         """
         This class implements a robust, ML Based QR detector & decoder.
@@ -94,8 +95,18 @@ class QReader:
         specific charset. Recommendations that have been found useful:
             - 'shift-jis' for Germanic languages
             - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
+
+        :param weights_folder: str or None. The folder where the weights of the model will be stored. If None, they will
+        be stored in the default folder of the qrdet package.
         """
-        self.detector = QRDetector(model_size=model_size, conf_th=min_confidence)
+        if weights_folder is None:
+            self.detector = QRDetector(model_size=model_size, conf_th=min_confidence)
+        else:
+            self.detector = QRDetector(
+                model_size=model_size,
+                conf_th=min_confidence,
+                weights_folder=weights_folder,
+            )
 
         if isinstance(reencode_to, str):
             self.reencode_to = (reencode_to,) if reencode_to != "utf-8" else ()

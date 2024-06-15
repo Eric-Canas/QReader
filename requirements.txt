@@ -1,4 +1,4 @@
 opencv-python
 numpy
 pyzbar
-qrdet>=2.4
+qrdet>=2.5
