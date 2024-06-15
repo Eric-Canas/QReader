@@ -58,7 +58,7 @@ decoded_text = qreader.detect_and_decode(image=image)
 
 ## API Reference
 
-### QReader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift-jis')
+### QReader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift-jis', weights_folder = None)
 
 This is the main class of the library. Please, try to instantiate it just once to avoid loading the model every time you need to detect a **QR** code.
 - ``model_size``: **str**. The size of the model to use. It can be **'n'** (nano), **'s'** (small), **'m'** (medium) or **'l'** (large). Larger models are more accurate but slower. Default: 's'.
@@ -66,6 +66,7 @@ This is the main class of the library. Please, try to instantiate it just once t
 - ``reencode_to``: **str** | **None**. The encoding to reencode the `utf-8` decoded QR string. If None, it won't re-encode. If you find some characters being decoded incorrectly, try to set a [Code Page](https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your specific charset. Recommendations that have been found useful:
   - 'shift-jis' for Germanic languages
   - 'cp65001' for Asian languages (Thanks to @nguyen-viet-hung for the suggestion)
+- ``weights_folder``: **str|None**. Folder where the detection model will be downloaded. If None, it will be downloaded to the default qrdet package internal folder, making sure that it gets correctly removed when uninstalling. You could need to change it when working in environments like [AWS Lambda](https://aws.amazon.com/es/pm/lambda/) where only [/tmp folder](https://docs.aws.amazon.com/lambda/latest/api/API_EphemeralStorage.html) is writable, as issued in [#21](https://github.com/Eric-Canas/QReader/issues/21). Default: `None` (_<qrdet_package>/.model_).
 
 ### QReader.detect_and_decode(image, return_detections = False)
 
