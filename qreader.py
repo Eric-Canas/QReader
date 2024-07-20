@@ -41,8 +41,11 @@ DEFAULT_REENCODINGS = (
     ("shift-jis", "big5") if os.name == "nt" else ("big5", "shift-jis")
 )
 
+from numpy.typing import NDArray
+
 CorrectionsType = typing.Literal["cropped_bbox", "corrected_perspective"]
 FlavorType = typing.Literal["original", "inverted", "grayscale"]
+ReencodeToType = typing.Union[str, typing.Sequence[str], None]
 
 
 @dataclass(frozen=True)
@@ -82,7 +85,7 @@ class QReader:
         self,
         model_size: str = "s",
         min_confidence: float = 0.5,
-        reencode_to: str | tuple[str, ...] | list[str] | None = DEFAULT_REENCODINGS,
+        reencode_to: ReencodeToType = DEFAULT_REENCODINGS,
         weights_folder: str | None = None,
     ):
         """
@@ -119,7 +122,7 @@ class QReader:
             assert isinstance(
                 reencode_to, (tuple, list)
             ), f"reencode_to must be a str, tuple, list or None. Got {type(reencode_to)}"
-            self.reencode_to = reencode_to
+            self.reencode_to = tuple(reencode_to)
 
     def detect(
         self, image: np.ndarray, is_bgr: bool = False
@@ -331,7 +334,7 @@ class QReader:
                         results=decodedQR,
                     )
                 # For QRs with black background and white foreground, try to invert the image
-                inverted_image = image = 255 - rescaled_image
+                inverted_image: NDArray[np.generic] = 255 - rescaled_image
                 decodedQR = decodeQR(inverted_image, symbols=[ZBarSymbol.QRCODE])
                 if len(decodedQR) > 0:
                     return wrap(
