@@ -20,6 +20,9 @@ setup(
         "pyzbar",
         "qrdet>=2.5",
     ],
+    extras_require={
+        "tests": ["mypy"],
+    },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
