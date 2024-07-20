@@ -50,7 +50,7 @@ class DecodeQRResult:
     scale_factor: float
     corrections: CorrectionsType
     flavor: FlavorType
-    blur_kernel_sizes: tuple[tuple[int, int]] | None
+    blur_kernel_sizes: tuple[tuple[int, int], ...] | None
     image: np.ndarray
     result: Decoded
 
@@ -82,7 +82,7 @@ class QReader:
         self,
         model_size: str = "s",
         min_confidence: float = 0.5,
-        reencode_to: str | tuple[str] | list[str] | None = DEFAULT_REENCODINGS,
+        reencode_to: str | tuple[str, ...] | list[str] | None = DEFAULT_REENCODINGS,
         weights_folder: str | None = None,
     ):
         """
@@ -228,11 +228,7 @@ class QReader:
 
     def get_detection_result_from_polygon(
         self,
-        quadrilateral_xy: (
-            np.ndarray
-            | tuple[tuple[float | int, float | int], ...]
-            | list[list[float | int, float | int]]
-        ),
+        quadrilateral_xy: np.ndarray | typing.Sequence[typing.Union[float, int]],
     ) -> dict[str, np.ndarray | float | tuple[float | int, float | int]]:
         """
         This method will simulate a detection result from the given quadrilateral. This is useful when you have detected
@@ -442,7 +438,9 @@ class QReader:
         return dst_img
 
     def __threshold_and_blur_decodings(
-        self, image: np.ndarray, blur_kernel_sizes: tuple[tuple[int, int]] = ((3, 3),)
+        self,
+        image: np.ndarray,
+        blur_kernel_sizes: tuple[tuple[int, int], ...] = ((3, 3),),
     ) -> list[Decoded]:
         """
         Try to decode the QR code just with pyzbar, pre-processing the image with different blur and threshold
