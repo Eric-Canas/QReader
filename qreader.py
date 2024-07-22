@@ -52,6 +52,9 @@ class DecodeQRResult:
     result: Decoded
 
     cropped_bbox: np.ndarray | None = None
+    cropped_quad: np.ndarray | None = None
+    corrected_perspective_values: tuple[np.ndarray, np.ndarray] | None = None
+
 
 def wrap(
     scale_factor: float,
@@ -62,7 +65,8 @@ def wrap(
     results: typing.List[Decoded],
 
     cropped_bbox: np.ndarray | None = None,
-
+    cropped_quad: np.ndarray | None = None,
+    corrected_perspective_values: tuple[np.ndarray, np.ndarray] | None = None
 ) -> list[DecodeQRResult]:
 
     return [
@@ -75,7 +79,8 @@ def wrap(
             result=result,
 
             cropped_bbox=cropped_bbox,
-
+            cropped_quad=cropped_quad,
+            corrected_perspective_values = corrected_perspective_values,
         )
         for result in results
     ]
@@ -205,6 +210,16 @@ class QReader:
                         for point in polygon
                     ]
                     return decoded_str, corrected_polygon
+                elif decodeQRResult.corrections == "corrected_perspective":
+                    padded_quad_xy, dst_pts = decodeQRResult.corrected_perspective_values
+                    M_inv = cv2.getPerspectiveTransform(dst_pts, padded_quad_xy)
+                    corrected_polygon = cv2.perspectiveTransform(np.array([[(point.x, point.y) for point in polygon]], dtype=np.float32), M_inv)[0]
+                    scale_factor = decodeQRResult.scale_factor
+                    corrected_polygon = [
+                        (point[0] / scale_factor, point[1] / scale_factor) for point in corrected_polygon
+                    ]
+                    return decoded_str, corrected_polygon
+
                 else:
                     return decoded_str, None
 
@@ -360,6 +375,7 @@ class QReader:
                         results=decodedQR,
 
                         cropped_bbox=detection_result[BBOX_XYXY] if label == "cropped_bbox" else None,
+                        corrected_perspective_values=(detection_result[PADDED_QUAD_XY], self.__get_dst_pts(corrected_perspective)) if label == "corrected_perspective" else None,
                     )
                 
                 # For QRs with black background and white foreground, try to invert the image
@@ -375,6 +391,7 @@ class QReader:
                         results=decodedQR,
 
                         cropped_bbox=detection_result[BBOX_XYXY] if label == "cropped_bbox" else None,
+                        corrected_perspective_values=(detection_result[PADDED_QUAD_XY], self.__get_dst_pts(corrected_perspective)) if label == "corrected_perspective" else None,
                     )
 
                 # If it not works, try to parse to grayscale (if it is not already)
@@ -398,6 +415,7 @@ class QReader:
                         results=decodedQR,
 
                         cropped_bbox=detection_result[BBOX_XYXY] if label == "cropped_bbox" else None,
+                        corrected_perspective_values=(detection_result[PADDED_QUAD_XY], self.__get_dst_pts(corrected_perspective)) if label == "corrected_perspective" else None,
                     )
 
                 if len(rescaled_image.shape) == 3:
@@ -425,6 +443,7 @@ class QReader:
                         results=decodedQR,
 
                         cropped_bbox=detection_result[BBOX_XYXY] if label == "cropped_bbox" else None,
+                        corrected_perspective_values=(detection_result[PADDED_QUAD_XY], self.__get_dst_pts(corrected_perspective)) if label == "corrected_perspective" else None,
                     )
 
         return []
@@ -474,6 +493,12 @@ class QReader:
         dst_img = cv2.warpPerspective(image, M, (N, N))
 
         return dst_img
+    
+    def __get_dst_pts(self, corrected_perspective: np.ndarray) -> np.ndarray:
+        N = corrected_perspective.shape[0]
+        return np.array(
+            [[0, 0], [N - 1, 0], [N - 1, N - 1], [0, N - 1]], dtype=np.float32
+        )
 
     def __threshold_and_blur_decodings(
         self, image: np.ndarray, blur_kernel_sizes: tuple[tuple[int, int]] = ((3, 3),)
