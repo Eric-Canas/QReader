@@ -41,13 +41,16 @@ DEFAULT_REENCODINGS = (
     ("shift-jis", "big5") if os.name == "nt" else ("big5", "shift-jis")
 )
 
+CorrectionsType = typing.Literal["cropped_bbox", "corrected_perspective"]
+FlavorType = typing.Literal["original", "inverted", "grayscale"]
+
 
 @dataclass(frozen=True)
 class DecodeQRResult:
     scale_factor: float
-    corrections: typing.Literal["cropped_bbox", "corrected_perspective"]
-    flavor: typing.Literal["original", "inverted", "grayscale"]
-    blur_kernel_sizes: tuple[tuple[int, int]] | None
+    corrections: CorrectionsType
+    flavor: FlavorType
+    blur_kernel_sizes: tuple[tuple[int, int], ...] | None
     image: np.ndarray
     result: Decoded
 
@@ -58,8 +61,8 @@ class DecodeQRResult:
 
 def wrap(
     scale_factor: float,
-    corrections: typing.Literal["cropped_bbox", "corrected_perspective"],
-    flavor: typing.Literal["original", "inverted", "grayscale"],
+    corrections: CorrectionsType,
+    flavor: FlavorType,
     blur_kernel_sizes: tuple[tuple[int, int], ...] | None,
     image: np.ndarray,
     results: typing.List[Decoded],
@@ -91,7 +94,7 @@ class QReader:
         self,
         model_size: str = "s",
         min_confidence: float = 0.5,
-        reencode_to: str | tuple[str] | list[str] | None = DEFAULT_REENCODINGS,
+        reencode_to: str | tuple[str, ...] | list[str] | None = DEFAULT_REENCODINGS,
         weights_folder: str | None = None,
     ):
         """
@@ -269,11 +272,7 @@ class QReader:
 
     def get_detection_result_from_polygon(
         self,
-        quadrilateral_xy: (
-            np.ndarray
-            | tuple[tuple[float | int, float | int], ...]
-            | list[list[float | int, float | int]]
-        ),
+        quadrilateral_xy: np.ndarray | typing.Sequence[typing.Union[float, int]],
     ) -> dict[str, np.ndarray | float | tuple[float | int, float | int]]:
         """
         This method will simulate a detection result from the given quadrilateral. This is useful when you have detected
@@ -343,11 +342,13 @@ class QReader:
             image=cropped_quad, padded_quad_xy=updated_detection[PADDED_QUAD_XY]
         )
 
+        corrections = {
+            "cropped_bbox": cropped_bbox,
+            "corrected_perspective": corrected_perspective,
+        }
+
         for scale_factor in (1, 0.5, 2, 0.25, 3, 4):
-            for label, image in {
-                "cropped_bbox": cropped_bbox,
-                "corrected_perspective": corrected_perspective,
-            }.items():
+            for label, image in corrections.items():
                 # If rescaled_image will be larger than 1024px, skip it
                 # TODO: Decide a minimum size for the QRs based on the resize benchmark
                 if (
@@ -368,7 +369,7 @@ class QReader:
                 if len(decodedQR) > 0:
                     return wrap(
                         scale_factor=scale_factor,
-                        corrections=label,
+                        corrections=typing.cast(CorrectionsType, label),
                         flavor="original",
                         blur_kernel_sizes=None,
                         image=rescaled_image,
@@ -384,7 +385,7 @@ class QReader:
                 if len(decodedQR) > 0:
                     return wrap(
                         scale_factor=scale_factor,
-                        corrections=label,
+                        corrections=typing.cast(CorrectionsType, label),
                         flavor="inverted",
                         blur_kernel_sizes=None,
                         image=inverted_image,
@@ -408,7 +409,7 @@ class QReader:
                 if len(decodedQR) > 0:
                     return wrap(
                         scale_factor=scale_factor,
-                        corrections=label,
+                        corrections=typing.cast(CorrectionsType, label),
                         flavor="grayscale",
                         blur_kernel_sizes=((5, 5), (7, 7)),
                         image=gray,
@@ -436,7 +437,7 @@ class QReader:
                 if len(decodedQR) > 0:
                     return wrap(
                         scale_factor=scale_factor,
-                        corrections=label,
+                        corrections=typing.cast(CorrectionsType, label),
                         flavor="grayscale",
                         blur_kernel_sizes=((3, 3),),
                         image=sharpened_gray,
@@ -501,7 +502,9 @@ class QReader:
         )
 
     def __threshold_and_blur_decodings(
-        self, image: np.ndarray, blur_kernel_sizes: tuple[tuple[int, int]] = ((3, 3),)
+        self,
+        image: np.ndarray,
+        blur_kernel_sizes: tuple[tuple[int, int], ...] = ((3, 3),),
     ) -> list[Decoded]:
         """
         Try to decode the QR code just with pyzbar, pre-processing the image with different blur and threshold
