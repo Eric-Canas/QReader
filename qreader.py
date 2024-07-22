@@ -51,6 +51,7 @@ class DecodeQRResult:
     image: np.ndarray
     result: Decoded
 
+    cropped_bbox: np.ndarray | None = None
 
 def wrap(
     scale_factor: float,
@@ -59,6 +60,9 @@ def wrap(
     blur_kernel_sizes: tuple[tuple[int, int], ...] | None,
     image: np.ndarray,
     results: typing.List[Decoded],
+
+    cropped_bbox: np.ndarray | None = None,
+
 ) -> list[DecodeQRResult]:
 
     return [
@@ -69,6 +73,9 @@ def wrap(
             blur_kernel_sizes=blur_kernel_sizes,
             image=image,
             result=result,
+
+            cropped_bbox=cropped_bbox,
+
         )
         for result in results
     ]
@@ -144,6 +151,7 @@ class QReader:
             bounding box in absolute coordinates, while 'bbox_xyxyn' is the bounding box in normalized coordinates
             (from 0. to 1.).
         """
+
         return self.detector.detect(image=image, is_bgr=is_bgr)
 
     def decode(
@@ -152,6 +160,7 @@ class QReader:
         detection_result: dict[
             str, np.ndarray | float | tuple[float | int, float | int]
         ],
+        return_zbar_poly: bool = False,
     ) -> str | None:
         """
         This method decodes a single QR code on the given image, described by a detection_result.
@@ -185,11 +194,31 @@ class QReader:
                         f"Double decoding failed for {self.reencode_to}. Returning utf-8 decoded string."
                     )
 
+            if return_zbar_poly:
+                polygon = decodeQRResult.result.polygon
+                if decodeQRResult.corrections == "cropped_bbox":
+                    bbox_xyxy = decodeQRResult.cropped_bbox
+                    x_offset, y_offset = bbox_xyxy[0], bbox_xyxy[1]
+                    scale_factor = decodeQRResult.scale_factor
+                    corrected_polygon = [
+                        (point.x / scale_factor + x_offset, point.y / scale_factor + y_offset)
+                        for point in polygon
+                    ]
+                    return decoded_str, corrected_polygon
+                else:
+                    return decoded_str, None
+
             return decoded_str
+        if return_zbar_poly:
+            return None, None
         return None
 
     def detect_and_decode(
-        self, image: np.ndarray, return_detections: bool = False, is_bgr: bool = False
+        self, 
+        image: np.ndarray, 
+        return_detections: bool = False, 
+        is_bgr: bool = False, 
+        return_zbar_poly: bool = False,
     ) -> (
         tuple[
             dict[str, np.ndarray | float | tuple[float | int, float | int]], str | None
@@ -214,7 +243,7 @@ class QReader:
         """
         detections = self.detect(image=image, is_bgr=is_bgr)
         decoded_qrs = tuple(
-            self.decode(image=image, detection_result=detection)
+            self.decode(image=image, detection_result=detection, return_zbar_poly=return_zbar_poly)
             for detection in detections
         )
 
@@ -312,6 +341,7 @@ class QReader:
                 ):
                     continue
 
+
                 rescaled_image = cv2.resize(
                     src=image,
                     dsize=None,
@@ -328,7 +358,10 @@ class QReader:
                         blur_kernel_sizes=None,
                         image=rescaled_image,
                         results=decodedQR,
+
+                        cropped_bbox=detection_result[BBOX_XYXY] if label == "cropped_bbox" else None,
                     )
+                
                 # For QRs with black background and white foreground, try to invert the image
                 inverted_image = image = 255 - rescaled_image
                 decodedQR = decodeQR(inverted_image, symbols=[ZBarSymbol.QRCODE])
@@ -340,6 +373,8 @@ class QReader:
                         blur_kernel_sizes=None,
                         image=inverted_image,
                         results=decodedQR,
+
+                        cropped_bbox=detection_result[BBOX_XYXY] if label == "cropped_bbox" else None,
                     )
 
                 # If it not works, try to parse to grayscale (if it is not already)
@@ -361,6 +396,8 @@ class QReader:
                         blur_kernel_sizes=((5, 5), (7, 7)),
                         image=gray,
                         results=decodedQR,
+
+                        cropped_bbox=detection_result[BBOX_XYXY] if label == "cropped_bbox" else None,
                     )
 
                 if len(rescaled_image.shape) == 3:
@@ -386,6 +423,8 @@ class QReader:
                         blur_kernel_sizes=((3, 3),),
                         image=sharpened_gray,
                         results=decodedQR,
+
+                        cropped_bbox=detection_result[BBOX_XYXY] if label == "cropped_bbox" else None,
                     )
 
         return []
