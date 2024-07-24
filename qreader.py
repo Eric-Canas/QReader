@@ -196,12 +196,10 @@ class QReader:
 
     def detect_and_decode(
         self, image: np.ndarray, return_detections: bool = False, is_bgr: bool = False
-    ) -> (
-        tuple[
-            dict[str, np.ndarray | float | tuple[float | int, float | int]], str | None
-        ]
-        | tuple[str | None, ...]
-    ):
+    ) -> typing.Tuple[
+        typing.Tuple[str | None, ...],
+        tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]]] | None,
+    ]:
         """
         This method will decode the **QR** codes in the given image and return the decoded strings
         (or None, if any of them was detected but not decoded).
@@ -227,7 +225,7 @@ class QReader:
         if return_detections:
             return decoded_qrs, detections
         else:
-            return decoded_qrs
+            return decoded_qrs, None
 
     def get_detection_result_from_polygon(
         self,
@@ -334,7 +332,7 @@ class QReader:
                         results=decodedQR,
                     )
                 # For QRs with black background and white foreground, try to invert the image
-                inverted_image: NDArray[np.generic] = 255 - rescaled_image
+                inverted_image = np.array(255) - rescaled_image
                 decodedQR = decodeQR(inverted_image, symbols=[ZBarSymbol.QRCODE])
                 if len(decodedQR) > 0:
                     return wrap(
