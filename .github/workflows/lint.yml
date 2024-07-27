@@ -57,4 +57,5 @@ jobs:
           pip install ".[tests]"
       - name: Run mypy
         run: |-
+          mkdir -p .mypy_cache
           mypy --install-types --non-interactive qreader.py
