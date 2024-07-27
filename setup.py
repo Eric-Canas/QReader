@@ -3,8 +3,8 @@ from setuptools import find_packages, setup
 setup(
     name="qreader",
     version="3.14",
-    packages=find_packages(where='src'),
-    package_dir={'': 'src'},
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
     # expose qreader.py as the unique module
     py_modules=["qreader"],
     url="https://github.com/Eric-Canas/qreader",
