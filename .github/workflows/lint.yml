@@ -58,4 +58,4 @@ jobs:
       - name: Run mypy
         run: |-
           mkdir -p .mypy_cache
-          mypy --install-types --non-interactive qreader.py
+          mypy --install-types --non-interactive src tests
