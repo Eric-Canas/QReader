@@ -1,9 +1,10 @@
-from setuptools import find_namespace_packages, setup
+from setuptools import find_packages, setup
 
 setup(
     name="qreader",
     version="3.14",
-    packages=find_namespace_packages(),
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     # expose qreader.py as the unique module
     py_modules=["qreader"],
     url="https://github.com/Eric-Canas/qreader",
@@ -21,7 +22,7 @@ setup(
         "qrdet>=2.5",
     ],
     extras_require={
-        "tests": ["mypy"],
+        "tests": ["mypy", "pytest"],
     },
     classifiers=[
         "Development Status :: 5 - Production/Stable",

@@ -29,6 +29,12 @@ On **Mac OS X**:
 brew install zbar
 ```
 
+To install the QReader package locally, run pip
+
+```bash
+python -m pip install --editable .
+```
+
 **NOTE:** If you're running **QReader** in a server with very limited resources, you may want to install the **CPU** version of [**PyTorch**](https://pytorch.org/get-started/locally/), before installing **QReader**. To do so, run: ``pip install torch --no-cache-dir`` (Thanks to [**@cjwalther**](https://github.com/Eric-Canas/QReader/issues/5) for his advice).
 
 ## Usage
