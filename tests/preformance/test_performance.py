@@ -8,13 +8,18 @@ from tqdm import tqdm
 from qreader import QReader
 
 SAMPLE_IMG_1 = os.path.join(
-    os.path.dirname(__file__), "documentation", "resources", "64x64.png"
+    os.path.dirname(__file__), "..", "..", "documentation", "resources", "64x64.png"
 )
 SAMPLE_IMG_2 = os.path.join(
-    os.path.dirname(__file__), "documentation", "resources", "512x512.jpeg"
+    os.path.dirname(__file__), "..", "..", "documentation", "resources", "512x512.jpeg"
 )
 SAMPLE_IMG_3 = os.path.join(
-    os.path.dirname(__file__), "documentation", "resources", "1024x1024.jpeg"
+    os.path.dirname(__file__),
+    "..",
+    "..",
+    "documentation",
+    "resources",
+    "1024x1024.jpeg",
 )
 
 PERFORMANCE_TEST_IAMGES = {
@@ -24,7 +29,8 @@ PERFORMANCE_TEST_IAMGES = {
 }
 RUNS_TO_AVERAGE, WARMUP_ITERATIONS = 5, 5
 
-if __name__ == "__main__":
+
+def test_performance():
     results = {}
     for shape, img_path in tqdm(PERFORMANCE_TEST_IAMGES.items()):
         # Read the image

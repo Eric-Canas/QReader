@@ -22,7 +22,7 @@ setup(
         "qrdet>=2.5",
     ],
     extras_require={
-        "tests": ["mypy", "pytest"],
+        "tests": ["mypy", "pytest", "qrcode"],
     },
     classifiers=[
         "Development Status :: 5 - Production/Stable",

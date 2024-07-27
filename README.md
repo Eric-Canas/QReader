@@ -166,6 +166,20 @@ Image: test_draw_64x64.jpeg -> QReader: ('https://github.com/Eric-Canas/QReader'
 
 Note that **QReader** internally uses <a href="https://github.com/NaturalHistoryMuseum/pyzbar" target="_blank">pyzbar</a> as **decoder**. The improved **detection-decoding rate** that **QReader** achieves comes from the combination of different image pre-processing techniques and the <a href="https://github.com/ultralytics/ultralytics" target="_blank">YOLOv8</a> based <a href="https://github.com/Eric-Canas/qrdet" target="_blank">**QR** detector</a> that is able to detect **QR** codes in harder conditions than classical _Computer Vision_ methods.
 
+## Running tests
+
+The tests can be launched via pytest. Make sure you install the test version of the package
+
+```bash
+python -m pip install --editable ".[test]"
+```
+
+Then, you can run the tests with
+
+```bash
+python -m pytest tests/
+```
+
 ## Benchmark
 
 ### Rotation Test
