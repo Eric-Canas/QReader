@@ -1,17 +1,13 @@
 import os
 
 import cv2
+import qrcode
 from qrdet import BBOX_XYXY
 
 from qreader import QReader
 
-SAMPLE_IMG = os.path.join(
-    os.path.dirname(__file__), "documentation", "resources", "test_draw_64x64.jpeg"
-)
 
-
-def utf_errors_test():
-    import qrcode
+def test_utf_errors():
 
     qreader = QReader(model_size="n")
     image_path = "my_image.png"
@@ -26,10 +22,21 @@ def utf_errors_test():
     print(f"result = {result[0]}")
 
 
-def decode_test_set():
+def test_decode_test_set():
     images = [
-        os.path.join(os.path.dirname(__file__), "testset", filename)
-        for filename in os.listdir(os.path.join(os.path.dirname(__file__), "testset"))
+        os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "..",
+            "documentation",
+            "resources",
+            filename,
+        )
+        for filename in os.listdir(
+            os.path.join(
+                os.path.dirname(__file__), "..", "..", "documentation", "resources"
+            )
+        )
     ]
     # Initialize QReader
     detector = QReader(model_size="n")
@@ -49,8 +56,3 @@ def decode_test_set():
                 pass
                 # decoded_qrs = detector.detect_and_decode(image=img, return_detections=False)
         print("-------------------")
-
-
-if __name__ == "__main__":
-    utf_errors_test()
-    # decode_test_set()
