@@ -225,7 +225,7 @@ class QReader:
         if return_detections:
             return decoded_qrs, detections
         else:
-            return decoded_qrs, None
+            return decoded_qrs
 
     def get_detection_result_from_polygon(
         self,
