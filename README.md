@@ -67,7 +67,7 @@ decoded_text = qreader.detect_and_decode(image=image)
 ### QReader(model_size = 's', min_confidence = 0.5, reencode_to = 'shift-jis', weights_folder = None)
 
 This is the main class of the library. Please, try to instantiate it just once to avoid loading the model every time you need to detect a **QR** code.
-- ``model_size``: **str**. The size of the model to use. It can be **'n'** (nano), **'s'** (small), **'m'** (medium) or **'l'** (large). Larger models are more accurate but slower. Default: 's'.
+- ``model_size``: **str**. The size of the model to use. It can be **'n'** (nano), **'s'** (small), **'m'** (medium) or **'l'** (large). Larger models could be more accurate but slower. Recommended: **'s'** ([#37](https://github.com/Eric-Canas/QReader/issues/37)). Default: 's'.
 - ``min_confidence``: **float**. The minimum confidence of the QR detection to be considered valid. Values closer to 0.0 can get more _False Positives_, while values closer to 1.0 can lose difficult QRs. Default (and recommended): 0.5.
 - ``reencode_to``: **str** | **None**. The encoding to reencode the `utf-8` decoded QR string. If None, it won't re-encode. If you find some characters being decoded incorrectly, try to set a [Code Page](https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) that matches your specific charset. Recommendations that have been found useful:
   - 'shift-jis' for Germanic languages
