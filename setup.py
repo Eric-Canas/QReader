@@ -7,6 +7,8 @@ setup(
     package_dir={"": "src"},
     # expose qreader.py as the unique module
     py_modules=["qreader"],
+    # include py.typed file in the distribution
+    package_data={"qreader": ["src/qreader/py.typed"]},
     url="https://github.com/Eric-Canas/qreader",
     license="MIT",
     author="Eric Canas",
