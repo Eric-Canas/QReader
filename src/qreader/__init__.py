@@ -196,9 +196,12 @@ class QReader:
 
     def detect_and_decode(
         self, image: np.ndarray, return_detections: bool = False, is_bgr: bool = False
-    ) -> typing.Tuple[
+    ) -> typing.Union[
+        typing.Tuple[
+            typing.Tuple[str | None, ...],
+            tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]]] | None,
+        ],
         typing.Tuple[str | None, ...],
-        tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]]] | None,
     ]:
         """
         This method will decode the **QR** codes in the given image and return the decoded strings
