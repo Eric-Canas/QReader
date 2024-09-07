@@ -199,7 +199,8 @@ class QReader:
     ) -> typing.Union[
         typing.Tuple[
             typing.Tuple[str | None, ...],
-            tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]]] | None,
+            tuple[dict[str, np.ndarray | float | tuple[float | int, float | int]]]
+            | None,
         ],
         typing.Tuple[str | None, ...],
     ]:
