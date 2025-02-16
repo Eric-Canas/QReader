@@ -1,3 +1,5 @@
+import math
+
 import cv2
 import imageio
 import numpy as np
@@ -108,8 +110,8 @@ def main():
             image, (size_w, size_h), interpolation=cv2.INTER_AREA
         )
 
-        pad_h = (640 - size_h) // 2
-        pad_w = (640 - size_w) // 2
+        pad_h = int(round((640 - size_h) / 2, ndigits=0))
+        pad_w = int(round((640 - size_w) / 2, ndigits=0))
         resized_image = cv2.copyMakeBorder(
             resized_image, pad_h, pad_h, pad_w, pad_w, cv2.BORDER_CONSTANT, value=255
         )
