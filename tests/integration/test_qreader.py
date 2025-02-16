@@ -1,26 +1,25 @@
 import os
-
 import cv2
 import qrcode
 from qrdet import BBOX_XYXY
 
 from qreader import QReader
 
+from tests.integration.constants import VIETNAMESE_NAMES
 
-def test_utf_errors():
 
+def test_utf_errors(assertion: bool = False):
     qreader = QReader(model_size="n")
-    image_path = "my_image.png"
-    data = "â"
-    print(f"data = {data}")
-    img = qrcode.make(data)
+    for name in VIETNAMESE_NAMES:
+        image_path = "my_image.png"
+        img = qrcode.make(name)
 
-    img.save(image_path)
-    img = cv2.imread(image_path)
-    os.remove(image_path)
-    result = qreader.detect_and_decode(image=img)
-    print(f"result = {result[0]}")
-
+        img.save(image_path)
+        img = cv2.imread(image_path)
+        os.remove(image_path)
+        result = qreader.detect_and_decode(image=img)
+        if assertion:
+            assert result[0] == name, f"Expected {name}, got {result[0]}"
 
 def test_decode_test_set():
     images = [
@@ -56,3 +55,4 @@ def test_decode_test_set():
                 pass
                 # decoded_qrs = detector.detect_and_decode(image=img, return_detections=False)
         print("-------------------")
+

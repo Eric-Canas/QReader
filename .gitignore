@@ -11,3 +11,5 @@ build/
 .env
 
 documentation/.DS_Store
+
+tests/.DS_Store
