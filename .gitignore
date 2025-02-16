@@ -9,3 +9,5 @@ venv/
 build/
 
 .env
+
+documentation/.DS_Store
