@@ -197,3 +197,20 @@ python -m pytest tests/
   
 </div>
 </div>
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+
+## Star History
+
+<p align="center">
+  <img src="https://api.star-history.com/svg?repos=Eric-Canas/QReader&type=Date" alt="Star History Chart">
+</p>
+
+
+
