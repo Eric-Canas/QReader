@@ -150,6 +150,9 @@ class QReader:
             bounding box in absolute coordinates, while 'bbox_xyxyn' is the bounding box in normalized coordinates
             (from 0. to 1.).
         """
+
+        image = image if isinstance(image, np.ndarray) else np.array(image)
+
         return self.detector.detect(image=image, is_bgr=is_bgr)
 
     def decode(
@@ -220,6 +223,8 @@ class QReader:
                     a tuple of strings with the decoded QR codes (or None if it can not be decoded).
 
         """
+        image = image if isinstance(image, np.ndarray) else np.array(image)
+
         detections = self.detect(image=image, is_bgr=is_bgr)
         decoded_qrs = tuple(
             self.decode(image=image, detection_result=detection)
